@@ -4,7 +4,7 @@ pipline {
 	stages {
 		stage('Clone Repository') {
 			steps {
-				git 'https://github.com/Serhataltnmks/jenkins-docker-example.git'
+				git branch:'main', url: 'https://github.com/Serhataltnmks/jenkins-docker-example.git'
 			}
 		}
 		stage('Build Docker Image'){
