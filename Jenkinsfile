@@ -1,0 +1,25 @@
+pipline {
+	agent any
+
+	stages {
+		stage('Clone Repository') {
+			steps {
+				git 'https://github.com/Serhataltnmks/jenkins-docker-example.git'
+			}
+		}
+		stage('Build Docker Image'){
+			steps{
+				scrpit {
+					dockerImage = docker.build("jenkins-docker-example")
+					}
+				}
+			}
+		stage('Run Docker Container') {
+			steps {
+				script {
+					dockerImage.run("-p 3000:3000")
+					}
+				}
+			}
+		}
+	}
