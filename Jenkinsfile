@@ -6,15 +6,15 @@ pipeline {
 		git branch: 'main', url: 'https://github.com/Serhataltnmks/jenkins-docker-example.git'
 		}
 	}
-	stage('Buîld Docker Image'){
+	stage('Build Docker Image'){
 	steps {
 		script {
-			dockeImage = docker.build("jenkins-docker-example")
+			dockerImage = docker.build("jenkins-docker-example")
 			}
 		}
 	}
 	stage('Run Docker Container'){
-	steps{
+	steps {
 		script {
 			dockerImage.run("-p 3000:3000")
 				}
