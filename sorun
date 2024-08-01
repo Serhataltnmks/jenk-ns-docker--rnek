@@ -10,22 +10,19 @@ Running on Jenkins in /var/jenkins_home/workspace/e-ticaret-service
 Selected Git installation does not exist. Using Default
 The recommended git tool is: NONE
 No credentials specified
-Cloning the remote Git repository
-Cloning repository https://github.com/Serhataltnmks/e-ticaret-service.git
- > git init /var/jenkins_home/workspace/e-ticaret-service # timeout=10
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/e-ticaret-service/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Serhataltnmks/e-ticaret-service.git # timeout=10
 Fetching upstream changes from https://github.com/Serhataltnmks/e-ticaret-service.git
  > git --version # timeout=10
  > git --version # 'git version 2.39.2'
  > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/e-ticaret-service.git +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git config remote.origin.url https://github.com/Serhataltnmks/e-ticaret-service.git # timeout=10
- > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
-Avoid second fetch
  > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
 Checking out Revision d7c0c7af45e249fbad65e0adacb2f60b8368319a (refs/remotes/origin/master)
-> git config core.sparsecheckout # timeout=10
+ > git config core.sparsecheckout # timeout=10
  > git checkout -f d7c0c7af45e249fbad65e0adacb2f60b8368319a # timeout=10
 Commit message: "Fix Jenkinsfile syntax"
-First time build. Skipping changelog.
+ > git rev-list --no-walk d7c0c7af45e249fbad65e0adacb2f60b8368319a # timeout=10
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] withEnv
@@ -47,9 +44,10 @@ Checking out Revision d7c0c7af45e249fbad65e0adacb2f60b8368319a (refs/remotes/ori
  > git config core.sparsecheckout # timeout=10
  > git checkout -f d7c0c7af45e249fbad65e0adacb2f60b8368319a # timeout=10
  > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
  > git checkout -b master d7c0c7af45e249fbad65e0adacb2f60b8368319a # timeout=10
 Commit message: "Fix Jenkinsfile syntax"
-First time build. Skipping changelog.
+ > git rev-list --no-walk d7c0c7af45e249fbad65e0adacb2f60b8368319a # timeout=10
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
@@ -60,15 +58,15 @@ First time build. Skipping changelog.
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t product_service:7 product_service
-/var/jenkins_home/workspace/e-ticaret-service@tmp/durable-b6b4f08d/script.sh.copy: 1: docker: not found
++ docker build -t product_service:9 product_service
+/var/jenkins_home/workspace/e-ticaret-service@tmp/durable-c2a46240/script.sh.copy: 1: docker: not found
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
 [Pipeline] // script
 [Pipeline] }
 [Pipeline] // stage
-[Pipeline] stage (hide)
+[Pipeline] stage
 [Pipeline] { (Deploy Services)
 Stage "Deploy Services" skipped due to earlier failure(s)
 [Pipeline] getContext
