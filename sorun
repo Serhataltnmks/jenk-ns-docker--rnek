@@ -1,29 +1,38 @@
-pipeline {
-    agent any
-
-    stages {
-        stage('Build') {
-            steps {
-                script {
-                    docker.build('my-app', 'app')
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                script {
-                    docker.image('my-app').inside {
-                        sh 'pytest'
-                    }
-                }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                script {
-                    docker.image('my-app').run('-d -p 5000:5000')
-                }
-            }
-        }
-    }
-}
+Started by user admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/Mylocalproject
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker build -t my-app app
+/var/jenkins_home/workspace/Mylocalproject@tmp/durable-3f5bb3ce/script.sh.copy: 1: docker: not found
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+Stage "Test" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+Stage "Deploy" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 127
+Finished: FAILURE
