@@ -1,34 +1,65 @@
-pipeline {
-    agent any
+Started by user serhataltinmakas
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/Simple HTML Project
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Repository)
+[Pipeline] git
+The recommended git tool is: NONE
+Warning: CredentialId "github-token" could not be found.
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/Simple HTML Project/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Serhataltnmks/simple-html-project.git # timeout=10
+Fetching upstream changes from https://github.com/Serhataltnmks/simple-html-project.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/simple-html-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 7c6caf9322e7f4dad82b2181be96578fca381c63 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 7c6caf9322e7f4dad82b2181be96578fca381c63 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master 7c6caf9322e7f4dad82b2181be96578fca381c63 # timeout=10
+Commit message: "Basit html dosyasi ve dockerfile ekleme"
+ > git rev-list --no-walk 7c6caf9322e7f4dad82b2181be96578fca381c63 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker Image)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker build -t simple-html .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
 
-    environment {
-        DOCKER_IMAGE = 'simple-html'
-    }
+Sending build context to Docker daemon  57.86kB
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                // GitHub'dan repository'yi klonlamak
-                git credentialsId: 'github-token', url: 'https://github.com/Serhataltnmks/simple-html-project.git'
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Docker image'ını oluşturma
-                    def customImage = docker.build("${env.DOCKER_IMAGE}")
-                }
-            }
-        }
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    // Docker container'ı farklı bir portta çalıştırma
-                    docker.image("${env.DOCKER_IMAGE}").inside('-d -p 8081:80') {
-                        sh 'echo "Docker container is running"'
-                    }
-                }
-            }
-        }
-    }
-}
+Error response from daemon: dockerfile parse error on line 1: unknown instruction: echo
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Docker Container)
+Stage "Run Docker Container" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
