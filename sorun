@@ -1,25 +1,30 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'simple-html'
+    }
+
     stages {
-        stage('Build') {
+        stage('Clone Repository') {
+            steps {
+                // GitHub'dan repository'yi klonlamak
+                git credentialsId: 'github-token', url: 'https://github.com/Serhataltnmks/simple-html-project.git'
+            }
+        }
+        stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t my-app app'
+                    // Docker image'ını oluşturma
+                    docker.build("${env.DOCKER_IMAGE}")
                 }
             }
         }
-        stage('Test') {
+        stage('Run Docker Container') {
             steps {
                 script {
-                    sh 'docker run my-app pytest'
-                }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                script {
-                    sh 'docker run -d -p 5000:5000 my-app'
+                    // Docker container'ı farklı bir portta çalıştırma
+                    docker.image("${env.DOCKER_IMAGE}").run('-d -p 8081:80')
                 }
             }
         }
