@@ -1,6 +1,2 @@
-FROM node:14
-WORKDIR /app
-COPY . .
-RUN npm install
-CMD ["node", "app.js"]
-EXPOSE 3000
+FROM nginx:alpine
+COPY index.html /usr/share/nginx/html/index.html
