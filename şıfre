@@ -1,1 +1,78 @@
-ghp_BxMYnLiRF0UGCTjY1et0Y3uPAXmYRp13Ct6Y
+Started by user serhataltinmakas
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/Simple HTML Project
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Repository)
+[Pipeline] git
+The recommended git tool is: NONE
+Warning: CredentialId "github-token" could not be found.
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/Simple HTML Project/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Serhataltnmks/simple-html-project.git # timeout=10
+Fetching upstream changes from https://github.com/Serhataltnmks/simple-html-project.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/simple-html-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 99fa7738cbdfda48baf664402bb7e2ad79d6cb27 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 99fa7738cbdfda48baf664402bb7e2ad79d6cb27 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master 99fa7738cbdfda48baf664402bb7e2ad79d6cb27 # timeout=10
+Commit message: "Fix Dockerfile"
+ > git rev-list --no-walk 99fa7738cbdfda48baf664402bb7e2ad79d6cb27 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker Image)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker build -t simple-html .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  69.12kB
+
+Step 1/2 : FROM nginx:alpine
+ ---> 1ae23480369f
+Step 2/2 : COPY index.html /usr/share/nginx/html/index.html
+ ---> Using cache
+ ---> 72ed84fcd337
+Successfully built 72ed84fcd337
+Successfully tagged simple-html:latest
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Docker Container)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] sh
++ docker run -d -d -p 8081:80 simple-html
+docker: Error response from daemon: driver failed programming external connectivity on endpoint laughing_edison (41495f291d293b359604e8b17186a7cc614727348fb9cb199e986f4d5f57cbd0): Bind for 0.0.0.0:8081 failed: port is already allocated.
+f6e5a8adc5a4a672581ffd8423f405a44739c586a0a2591cc71c29eeed4d2575
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 125
+Finished: FAILURE
