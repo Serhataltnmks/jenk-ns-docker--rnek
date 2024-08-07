@@ -1,29 +1,49 @@
-pipeline {
-    agent any
-    environment {
-        SCANNER_HOME = tool 'SonarQube Scanner'
-    }
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/your-username/my-sonarqube-project.git'  // Projenizin git repo URL'si
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('My SonarQube Server') {  // Daha önce eklediğiniz SonarQube sunucu adı
-                    sh '${SCANNER_HOME}/bin/sonar-scanner'
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        waitForQualityGate abortPipeline: true
-                    }
-                }
-            }
-        }
-    }
-}
+Started by user serhataltinmakas
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/sonar
+[Pipeline] {
+[Pipeline] tool
+Unpacking https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/6.1.0.4477/sonar-scanner-cli-6.1.0.4477.zip to /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner on Jenkins
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Serhataltnmks/Sonar.git
+ > git init /var/lib/jenkins/workspace/sonar # timeout=10
+Fetching upstream changes from https://github.com/Serhataltnmks/Sonar.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/Sonar.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Serhataltnmks/Sonar.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git rev-parse origin/master^{commit} # timeout=10
+ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
+ERROR: Maximum checkout retry attempts reached, aborting
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SonarQube Analysis)
+Stage "SonarQube Analysis" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Quality Gate)
+Stage "Quality Gate" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
+Finished: FAILURE
