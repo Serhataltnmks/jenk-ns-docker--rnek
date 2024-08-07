@@ -4,7 +4,6 @@ Started by user serhataltinmakas
 Running on Jenkins in /var/lib/jenkins/workspace/sonar
 [Pipeline] {
 [Pipeline] tool
-Unpacking https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/6.1.0.4477/sonar-scanner-cli-6.1.0.4477.zip to /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner on Jenkins
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] stage
@@ -12,18 +11,15 @@ Unpacking https://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scann
 [Pipeline] git
 The recommended git tool is: NONE
 No credentials specified
-Cloning the remote Git repository
-Cloning repository https://github.com/Serhataltnmks/Sonar.git
- > git init /var/lib/jenkins/workspace/sonar # timeout=10
-Fetching upstream changes from https://github.com/Serhataltnmks/Sonar.git
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/sonar/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Serhataltnmks/Sonar # timeout=10
+Fetching upstream changes from https://github.com/Serhataltnmks/Sonar
  > git --version # timeout=10
  > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/Sonar.git +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git config remote.origin.url https://github.com/Serhataltnmks/Sonar.git # timeout=10
- > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
-Avoid second fetch
- > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
- > git rev-parse origin/master^{commit} # timeout=10
+ > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/Sonar +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/maîn^{commit} # timeout=10
+ > git rev-parse origin/maîn^{commit} # timeout=10
 ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
 ERROR: Maximum checkout retry attempts reached, aborting
 [Pipeline] }
