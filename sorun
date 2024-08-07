@@ -1,30 +1,27 @@
 pipeline {
     agent any
-
     environment {
-        DOCKER_IMAGE = 'simple-html'
+        SCANNER_HOME = tool 'SonarQube Scanner'
     }
-
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
-                // GitHub'dan repository'yi klonlamak
-                git credentialsId: 'github-token', url: 'https://github.com/Serhataltnmks/simple-html-project.git'
+                git 'https://github.com/your-username/my-sonarqube-project.git'  // Projenizin git repo URL'si
             }
         }
-        stage('Build Docker Image') {
+        stage('SonarQube Analysis') {
             steps {
-                script {
-                    // Docker image'ını oluşturma
-                    def customImage = docker.build("${env.DOCKER_IMAGE}")
+                withSonarQubeEnv('My SonarQube Server') {  // Daha önce eklediğiniz SonarQube sunucu adı
+                    sh '${SCANNER_HOME}/bin/sonar-scanner'
                 }
             }
         }
-        stage('Run Docker Container') {
+        stage('Quality Gate') {
             steps {
                 script {
-                    // Docker container'ı farklı bir portta çalıştırma
-                    docker.image("${env.DOCKER_IMAGE}").run('-d -p 8081:80')
+                    timeout(time: 1, unit: 'HOURS') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }
