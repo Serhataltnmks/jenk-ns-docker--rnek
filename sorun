@@ -135,3 +135,18 @@ Timeout set to expire in 1 saat 0 dakika
 [Pipeline] waitForQualityGate
 Checking status of SonarQube task 'af984100-9520-473a-a0fc-e704828511b6' on server 'SonarQube Server'
 SonarQube task 'af984100-9520-473a-a0fc-e704828511b6' status is 'IN_PROGRESS'
+Cancelling nested steps due to timeout
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Timeout has been exceeded
+org.jenkinsci.plugins.workflow.actions.ErrorAction$ErrorId: fd017030-c716-4e3c-ae95-4a55ebe14aad
+Finished: ABORTED
