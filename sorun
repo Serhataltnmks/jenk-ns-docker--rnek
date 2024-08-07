@@ -13,21 +13,33 @@ The recommended git tool is: NONE
 No credentials specified
  > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/sonar/.git # timeout=10
 Fetching changes from the remote Git repository
- > git config remote.origin.url https://github.com/Serhataltnmks/Sonar # timeout=10
-Fetching upstream changes from https://github.com/Serhataltnmks/Sonar
+ > git config remote.origin.url https://github.com/Serhataltnmks/Sonar.git # timeout=10
+Fetching upstream changes from https://github.com/Serhataltnmks/Sonar.git
  > git --version # timeout=10
  > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/Sonar +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git rev-parse refs/remotes/origin/maîn^{commit} # timeout=10
- > git rev-parse origin/maîn^{commit} # timeout=10
-ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
-ERROR: Maximum checkout retry attempts reached, aborting
+ > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/Sonar.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git checkout -b main 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
+Commit message: "Update README.md"
+First time build. Skipping changelog.
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
 [Pipeline] { (SonarQube Analysis)
-Stage "SonarQube Analysis" skipped due to earlier failure(s)
-[Pipeline] getContext
+[Pipeline] withSonarQubeEnv
+Injecting SonarQube environment variables using the configuration: SonarQube Server
+[Pipeline] {
+[Pipeline] sh
++ /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/bin/sonar-scanner
+Error: LinkageError occurred while loading main class org.sonarsource.scanner.cli.Main
+	java.lang.UnsupportedClassVersionError: org/sonarsource/scanner/cli/Main has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 55.0
+[Pipeline] }
+WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
+[Pipeline] // withSonarQubeEnv
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
@@ -41,5 +53,5 @@ Stage "Quality Gate" skipped due to earlier failure(s)
 [Pipeline] }
 [Pipeline] // node
 [Pipeline] End of Pipeline
-ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
+ERROR: script returned exit code 1
 Finished: FAILURE
