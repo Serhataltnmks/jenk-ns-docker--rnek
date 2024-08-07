@@ -23,9 +23,10 @@ Checking out Revision 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff (refs/remotes/ori
  > git config core.sparsecheckout # timeout=10
  > git checkout -f 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
  > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D main # timeout=10
  > git checkout -b main 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
 Commit message: "Update README.md"
-First time build. Skipping changelog.
+ > git rev-list --no-walk 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
@@ -35,8 +36,28 @@ Injecting SonarQube environment variables using the configuration: SonarQube Ser
 [Pipeline] {
 [Pipeline] sh
 + /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/bin/sonar-scanner
-Error: LinkageError occurred while loading main class org.sonarsource.scanner.cli.Main
-	java.lang.UnsupportedClassVersionError: org/sonarsource/scanner/cli/Main has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 55.0
+11:45:22.910 INFO  Scanner configuration file: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/conf/sonar-scanner.properties
+11:45:22.921 INFO  Project root configuration file: NONE
+11:45:23.020 INFO  SonarScanner CLI 6.1.0.4477
+11:45:23.027 INFO  Java 17.0.12 Ubuntu (64-bit)
+11:45:23.028 INFO  Linux 5.15.0-117-generic amd64
+11:45:23.169 INFO  User cache: /var/lib/jenkins/.sonar/cache
+11:45:25.238 INFO  JRE provisioning: os[linux], arch[x86_64]
+11:45:30.695 INFO  Communicating with SonarQube Server 10.6.0.92116
+11:45:31.793 INFO  Starting SonarScanner Engine...
+11:45:31.795 INFO  Java 17.0.11 Eclipse Adoptium (64-bit)
+11:45:34.610 INFO  Load global settings
+11:45:34.977 INFO  Load global settings (done) | time=367ms
+11:45:34.999 INFO  Server id: 147B411E-AZErvPW5ULaPv881y5_F
+11:45:35.037 INFO  Loading required plugins
+11:45:35.040 INFO  Load plugins index
+11:45:35.144 INFO  Load plugins index (done) | time=103ms
+11:45:35.148 INFO  Load/download plugins
+11:45:36.997 INFO  Load/download plugins (done) | time=1849ms
+11:45:37.955 INFO  Process project properties
+11:45:37.986 ERROR You must define the following mandatory properties for 'Unknown': sonar.projectKey
+11:45:38.071 INFO  EXECUTION FAILURE
+11:45:38.073 INFO  Total time: 15.250s
 [Pipeline] }
 WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
 [Pipeline] // withSonarQubeEnv
@@ -53,5 +74,5 @@ Stage "Quality Gate" skipped due to earlier failure(s)
 [Pipeline] }
 [Pipeline] // node
 [Pipeline] End of Pipeline
-ERROR: script returned exit code 1
+ERROR: script returned exit code 3
 Finished: FAILURE
