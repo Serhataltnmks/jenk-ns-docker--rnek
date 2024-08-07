@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'simple-html'
+        SCANNER_HOME = tool 'SonarQube Scanner'
     }
 
     stages {
@@ -25,6 +26,30 @@ pipeline {
                 script {
                     // Docker container'ı farklı bir portta çalıştırma
                     docker.image("${env.DOCKER_IMAGE}").run('-d -p 8081:80')
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('My SonarQube Server') {
+                    sh """
+                        ${SCANNER_HOME}/bin/sonar-scanner \
+                        -Dsonar.projectKey=simple-html-project \
+                        -Dsonar.projectName='Simple HTML Project' \
+                        -Dsonar.projectVersion=1.0 \
+                        -Dsonar.sources=. \
+                        -Dsonar.language=html \
+                        -Dsonar.sourceEncoding=UTF-8
+                    """
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 10, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }
