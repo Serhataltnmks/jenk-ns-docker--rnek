@@ -1,5 +1,5 @@
 Started by user serhataltinmakas
-[Pipeline] Start of Pipeline (hide)
+[Pipeline] Start of Pipeline
 [Pipeline] node
 Running on Jenkins in /var/lib/jenkins/workspace/Simple HTML Project
 [Pipeline] {
@@ -42,7 +42,7 @@ DEPRECATED: The legacy builder is deprecated and will be removed in a future rel
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
 
-Sending build context to Docker daemon  70.14kB
+Sending build context to Docker daemon  70.66kB
 
 Step 1/2 : FROM nginx:alpine
  ---> 1ae23480369f
@@ -64,14 +64,16 @@ Successfully tagged simple-html:latest
 [Pipeline] isUnix
 [Pipeline] sh
 + docker run -d -d -p 8081:80 simple-html
+docker: Error response from daemon: driver failed programming external connectivity on endpoint naughty_hoover (26db8d082b8d406e034a4666c55665d2cf21233fbee1a3d16a7786713e724748): Bind for 0.0.0.0:8081 failed: port is already allocated.
+439a12edf817b45b31307da667ceeaf033b3871c11767f085879364253837f4f
 [Pipeline] }
 [Pipeline] // script
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
 [Pipeline] { (SonarQube Analysis)
-[Pipeline] withSonarQubeEnv
-[Pipeline] // withSonarQubeEnv
+Stage "SonarQube Analysis" skipped due to earlier failure(s)
+[Pipeline] getContext
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
@@ -85,6 +87,5 @@ Stage "Quality Gate" skipped due to earlier failure(s)
 [Pipeline] }
 [Pipeline] // node
 [Pipeline] End of Pipeline
-ERROR: SonarQube installation defined in this job (My SonarQube Server) does not match any configured installation. Number of installations that can be configured: 1.
-If you want to reassign jobs to a different SonarQube installation, check the documentation under https://redirect.sonarsource.com/plugins/jenkins.html
+ERROR: script returned exit code 125
 Finished: FAILURE
