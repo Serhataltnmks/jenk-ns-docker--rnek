@@ -1,152 +1,32 @@
-Started by user serhataltinmakas
-[Pipeline] Start of Pipeline
-[Pipeline] node
-Running on Jenkins in /var/lib/jenkins/workspace/sonar
-[Pipeline] {
-[Pipeline] tool
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] stage
-[Pipeline] { (Checkout)
-[Pipeline] git
-The recommended git tool is: NONE
-No credentials specified
- > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/sonar/.git # timeout=10
-Fetching changes from the remote Git repository
- > git config remote.origin.url https://github.com/Serhataltnmks/Sonar.git # timeout=10
-Fetching upstream changes from https://github.com/Serhataltnmks/Sonar.git
- > git --version # timeout=10
- > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://github.com/Serhataltnmks/Sonar.git +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
-Checking out Revision 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff (refs/remotes/origin/main)
- > git config core.sparsecheckout # timeout=10
- > git checkout -f 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
- > git branch -a -v --no-abbrev # timeout=10
- > git branch -D main # timeout=10
- > git checkout -b main 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
-Commit message: "Update README.md"
- > git rev-list --no-walk 149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff # timeout=10
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (SonarQube Analysis)
-[Pipeline] withSonarQubeEnv
-Injecting SonarQube environment variables using the configuration: SonarQube Server
-[Pipeline] {
-[Pipeline] sh
-+ /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/bin/sonar-scanner -Dsonar.projectKey=my_project_key -Dsonar.projectName=My Project Name -Dsonar.projectVersion=1.0 -Dsonar.sources=. -Dsonar.language=java -Dsonar.sourceEncoding=UTF-8
-11:52:15.675 INFO  Scanner configuration file: /var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/conf/sonar-scanner.properties
-11:52:15.682 INFO  Project root configuration file: NONE
-11:52:15.749 INFO  SonarScanner CLI 6.1.0.4477
-11:52:15.761 INFO  Java 17.0.12 Ubuntu (64-bit)
-11:52:15.763 INFO  Linux 5.15.0-117-generic amd64
-11:52:15.849 INFO  User cache: /var/lib/jenkins/.sonar/cache
-11:52:18.998 INFO  JRE provisioning: os[linux], arch[x86_64]
-11:52:19.277 INFO  Communicating with SonarQube Server 10.6.0.92116
-11:52:20.462 INFO  Starting SonarScanner Engine...
-11:52:20.467 INFO  Java 17.0.11 Eclipse Adoptium (64-bit)
-11:52:23.343 INFO  Load global settings
-11:52:23.632 INFO  Load global settings (done) | time=284ms
-11:52:23.647 INFO  Server id: 147B411E-AZErvPW5ULaPv881y5_F
-11:52:23.682 INFO  Loading required plugins
-11:52:23.683 INFO  Load plugins index
-11:52:23.745 INFO  Load plugins index (done) | time=61ms
-11:52:23.747 INFO  Load/download plugins
-11:52:23.870 INFO  Load/download plugins (done) | time=127ms
-11:52:24.952 INFO  Process project properties
-11:52:24.972 INFO  Process project properties (done) | time=13ms
-11:52:24.991 INFO  Project key: my_project_key
-11:52:24.992 INFO  Base dir: /var/lib/jenkins/workspace/sonar
-11:52:24.992 INFO  Working dir: /var/lib/jenkins/workspace/sonar/.scannerwork
-11:52:25.039 INFO  Load project settings for component key: 'my_project_key'
-11:52:25.166 INFO  Load quality profiles
-11:52:25.496 INFO  Load quality profiles (done) | time=335ms
-11:52:25.548 INFO  Auto-configuring with CI 'Jenkins'
-11:52:25.622 INFO  Load active rules
-11:52:46.832 INFO  Load active rules (done) | time=21214ms
-11:52:46.847 INFO  Load analysis cache
-11:52:46.884 INFO  Load analysis cache (404) | time=30ms
-11:52:47.008 INFO  Preprocessing files...
-11:52:47.346 INFO  0 languages detected in 1 preprocessed file
-11:52:47.353 INFO  0 files ignored because of scm ignore settings
-11:52:47.358 INFO  Loading plugins for detected languages
-11:52:47.359 INFO  Load/download plugins
-11:52:47.359 INFO  Load/download plugins (done) | time=0ms
-11:52:47.500 INFO  Load project repositories
-11:52:47.536 INFO  Load project repositories (done) | time=18ms
-11:52:47.544 INFO  Indexing files...
-11:52:47.546 INFO  Project configuration:
-11:52:47.576 INFO  1 file indexed
-11:52:47.582 INFO  ------------- Run sensors on module My Project Name
-11:52:47.728 INFO  Load metrics repository
-11:52:47.787 INFO  Load metrics repository (done) | time=110ms
-11:52:49.175 INFO  Sensor JaCoCo XML Report Importer [jacoco]
-11:52:49.182 INFO  'sonar.coverage.jacoco.xmlReportPaths' is not defined. Using default locations: target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml
-11:52:49.184 INFO  No report imported, no coverage information will be imported by JaCoCo XML Report Importer
-11:52:49.185 INFO  Sensor JaCoCo XML Report Importer [jacoco] (done) | time=10ms
-11:52:49.193 INFO  Sensor Java Config Sensor [iac]
-11:52:49.282 INFO  0 source files to be analyzed
-11:52:49.328 INFO  0/0 source files have been analyzed
-11:52:49.332 INFO  Sensor Java Config Sensor [iac] (done) | time=147ms
-11:52:49.333 INFO  Sensor IaC Docker Sensor [iac]
-11:52:49.338 INFO  0 source files to be analyzed
-11:52:49.562 INFO  0/0 source files have been analyzed
-11:52:49.565 INFO  Sensor IaC Docker Sensor [iac] (done) | time=234ms
-11:52:49.565 INFO  Sensor TextAndSecretsSensor [text]
-11:52:49.566 INFO  Available processors: 4
-11:52:49.566 INFO  Using 4 threads for analysis.
-11:52:50.782 INFO  The property "sonar.tests" is not set. To improve the analysis accuracy, we categorize a file as a test file if any of the following is true:
-  * The filename starts with "test"
-  * The filename contains "test." or "tests."
-  * Any directory in the file path is named: "doc", "docs", "test" or "tests"
-  * Any directory in the file path has a name ending in "test" or "tests"
+pipeline {
+    agent any
 
-11:52:50.845 INFO  Using git CLI to retrieve untracked files
-11:52:50.871 INFO  Analyzing language associated files and files included via "sonar.text.inclusions" that are tracked by git
-11:52:50.872 INFO  Sensor TextAndSecretsSensor [text] (done) | time=1307ms
-11:52:50.888 INFO  ------------- Run sensors on project
-11:52:50.963 INFO  Sensor Zero Coverage Sensor
-11:52:50.998 INFO  Sensor Zero Coverage Sensor (done) | time=19ms
-11:52:51.027 INFO  CPD Executor Calculating CPD for 0 files
-11:52:51.045 INFO  CPD Executor CPD calculation finished (done) | time=0ms
-11:52:51.055 INFO  SCM revision ID '149a07bdbf9ef6ca78fd9d5c59a8adeca5e8e9ff'
-11:52:51.238 INFO  Analysis report generated in 206ms, dir size=196.1 kB
-11:52:51.284 INFO  Analysis report compressed in 48ms, zip size=18.8 kB
-11:52:52.487 INFO  Analysis report uploaded in 1195ms
-11:52:52.491 INFO  ANALYSIS SUCCESSFUL, you can find the results at: http://localhost:9000/dashboard?id=my_project_key
-11:52:52.492 INFO  Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
-11:52:52.494 INFO  More about the report processing at http://localhost:9000/api/ce/task?id=af984100-9520-473a-a0fc-e704828511b6
-11:52:52.534 INFO  Analysis total time: 28.440 s
-11:52:52.537 INFO  SonarScanner Engine completed successfully
-11:52:52.660 INFO  EXECUTION SUCCESS
-11:52:52.663 INFO  Total time: 37.143s
-[Pipeline] }
-[Pipeline] // withSonarQubeEnv
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Quality Gate)
-[Pipeline] script
-[Pipeline] {
-[Pipeline] timeout
-Timeout set to expire in 1 saat 0 dakika
-[Pipeline] {
-[Pipeline] waitForQualityGate
-Checking status of SonarQube task 'af984100-9520-473a-a0fc-e704828511b6' on server 'SonarQube Server'
-SonarQube task 'af984100-9520-473a-a0fc-e704828511b6' status is 'IN_PROGRESS'
-Cancelling nested steps due to timeout
-[Pipeline] }
-[Pipeline] // timeout
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-Timeout has been exceeded
-org.jenkinsci.plugins.workflow.actions.ErrorAction$ErrorId: fd017030-c716-4e3c-ae95-4a55ebe14aad
-Finished: ABORTED
+    environment {
+        DOCKER_IMAGE = 'simple-html'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // GitHub'dan repository'yi klonlamak
+                git credentialsId: 'github-token', url: 'https://github.com/Serhataltnmks/simple-html-project.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Docker image'ını oluşturma
+                    def customImage = docker.build("${env.DOCKER_IMAGE}")
+                }
+            }
+        }
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Docker container'ı farklı bir portta çalıştırma
+                    docker.image("${env.DOCKER_IMAGE}").run('-d -p 8081:80')
+                }
+            }
+        }
+    }
+}
