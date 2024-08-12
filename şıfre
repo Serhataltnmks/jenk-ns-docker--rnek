@@ -1,24 +1,38 @@
 pipeline {
     agent any
+
     stages {
+        stage('Clone Repository') {
+            steps {
+                // GitLab projesinden kodu klonlama
+                git branch: 'master', url: 'https://gitlab.com/username/simple-html-project.git'
+            }
+        }
         stage('SonarQube Analysis') {
             environment {
+                // SonarQube Scanner aracının yolunu alır
                 scannerHome = tool 'SonarQube Scanner'
             }
             steps {
+                // SonarQube ortam değişkenlerini ayarlar
                 withSonarQubeEnv('SonarQube') {
+                    // Jenkins Credentials'dan SonarQube token'ını alır
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        // SonarQube analizini başlatır
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=simple-html-project -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
                     }
                 }
             }
         }
     }
+
     post {
         success {
+            // Pipeline başarıyla tamamlandığında bu mesajı gösterir
             echo 'Pipeline completed successfully!'
         }
         failure {
+            // Pipeline başarısız olduğunda bu mesajı gösterir
             echo 'Pipeline failed.'
         }
     }
