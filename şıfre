@@ -1,67 +1,277 @@
-pipeline {
-    agent any
+Started by user serhataltinmakas
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/my-microservices-project
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Repository)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/my-microservices-project/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/my-microservices-project.git # timeout=10
+Fetching upstream changes from https://gitlab.com/serhataltnmks/my-microservices-project.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/my-microservices-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 4a3d65bf692eb7e5f8bb7f5c5dd56bdfef4e6680 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 4a3d65bf692eb7e5f8bb7f5c5dd56bdfef4e6680 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master 4a3d65bf692eb7e5f8bb7f5c5dd56bdfef4e6680 # timeout=10
+Commit message: "update"
+ > git rev-list --no-walk 4a3d65bf692eb7e5f8bb7f5c5dd56bdfef4e6680 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build User Service)
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/my-microservices-project/user-service
+[Pipeline] {
+[Pipeline] sh
++ docker build -t user-service:latest .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
 
-    environment {
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
-        PATH = "${JAVA_HOME}/bin:${env.PATH}"
-    }
+Sending build context to Docker daemon  4.096kB
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://gitlab.com/serhataltnmks/my-microservices-project.git'
-            }
-        }
-        stage('Build User Service') {
-            steps {
-                dir('user-service') {
-                    sh 'docker build -t user-service:latest .'
-                }
-            }
-        }
-        stage('Build Product Service') {
-            steps {
-                dir('product-service') {
-                    sh 'docker build -t product-service:latest .'
-                }
-            }
-        }
-        stage('Build Order Service') {
-            steps {
-                dir('order-service') {
-                    sh 'docker build -t order-service:latest .'
-                }
-            }
-        }
-        stage('Build API Gateway') {
-            steps {
-                dir('api-gateway') {
-                    sh 'docker build -t api-gateway:latest .'
-                }
-            }
-        }
-        stage('Run SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube Server') {
-                    sh '/opt/sonar-scanner/bin/sonar-scanner -X'
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-    }
+Step 1/7 : FROM node:14
+ ---> 1d12470fa662
+Step 2/7 : WORKDIR /usr/src/app
+ ---> Using cache
+ ---> 2a6919b5b0e4
+Step 3/7 : COPY package*.json ./
+ ---> Using cache
+ ---> d772cbac7e47
+Step 4/7 : RUN npm install
+ ---> Using cache
+ ---> 9b87d9623a7b
+Step 5/7 : COPY . .
+ ---> Using cache
+ ---> 5e4748fd0dc3
+Step 6/7 : EXPOSE 3001
+ ---> Using cache
+ ---> 3cb61a375661
+Step 7/7 : CMD ["node", "index.js"]
+ ---> Using cache
+ ---> bd592129debd
+Successfully built bd592129debd
+Successfully tagged user-service:latest
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Product Service)
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/my-microservices-project/product-service
+[Pipeline] {
+[Pipeline] sh
++ docker build -t product-service:latest .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
 
-    post {
-        always {
-            echo 'Pipeline complete, cleaning up...'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
-}
+Sending build context to Docker daemon  4.096kB
+
+Step 1/7 : FROM node:14
+ ---> 1d12470fa662
+Step 2/7 : WORKDIR /usr/src/app
+ ---> Using cache
+ ---> 2a6919b5b0e4
+Step 3/7 : COPY package*.json ./
+ ---> Using cache
+ ---> bae8eef9d6df
+Step 4/7 : RUN npm install
+ ---> Using cache
+ ---> 5c032001b878
+Step 5/7 : COPY . .
+ ---> Using cache
+ ---> 3d5830415411
+Step 6/7 : EXPOSE 3002
+ ---> Using cache
+ ---> afe1730efb38
+Step 7/7 : CMD ["node", "index.js"]
+ ---> Using cache
+ ---> 3848b67a480d
+Successfully built 3848b67a480d
+Successfully tagged product-service:latest
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Order Service)
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/my-microservices-project/order-service
+[Pipeline] {
+[Pipeline] sh
++ docker build -t order-service:latest .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  4.096kB
+
+Step 1/7 : FROM node:14
+ ---> 1d12470fa662
+Step 2/7 : WORKDIR /usr/src/app
+ ---> Using cache
+ ---> 2a6919b5b0e4
+Step 3/7 : COPY package*.json ./
+ ---> Using cache
+ ---> 69d8ef750e47
+Step 4/7 : RUN npm install
+ ---> Using cache
+ ---> 743ccdf00f72
+Step 5/7 : COPY . .
+ ---> Using cache
+ ---> df7254a345b3
+Step 6/7 : EXPOSE 3003
+ ---> Using cache
+ ---> f153dbe13282
+Step 7/7 : CMD ["node", "index.js"]
+ ---> Using cache
+ ---> 162ac0318612
+Successfully built 162ac0318612
+Successfully tagged order-service:latest
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build API Gateway)
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/my-microservices-project/api-gateway
+[Pipeline] {
+[Pipeline] sh
++ docker build -t api-gateway:latest .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  5.632kB
+
+Step 1/7 : FROM node:14
+ ---> 1d12470fa662
+Step 2/7 : WORKDIR /usr/serc/app
+ ---> Using cache
+ ---> 41fefbbb652f
+Step 3/7 : COPY package*.json ./
+ ---> Using cache
+ ---> b1fb8d2a3527
+Step 4/7 : RUN npm install
+ ---> Using cache
+ ---> 9b26cb0c3214
+Step 5/7 : COPY . .
+ ---> Using cache
+ ---> bfe995a17bce
+Step 6/7 : EXPOSE 3000
+ ---> Using cache
+ ---> 9d54639e957a
+Step 7/7 : CMD ["node", "index.js"]
+ ---> Using cache
+ ---> 48c15eb58042
+Successfully built 48c15eb58042
+Successfully tagged api-gateway:latest
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run SonarQube Analysis)
+[Pipeline] withSonarQubeEnv
+Injecting SonarQube environment variables using the configuration: SonarQube Server
+[Pipeline] {
+[Pipeline] sh
++ /opt/sonar-scanner/bin/sonar-scanner -X
+12:53:01.125 INFO: Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+12:53:01.135 INFO: Project root configuration file: NONE
+12:53:01.221 INFO: SonarScanner 4.6.2.2472
+12:53:01.221 INFO: Java 11.0.11 AdoptOpenJDK (64-bit)
+12:53:01.221 INFO: Linux 5.15.0-117-generic amd64
+12:53:01.601 DEBUG: keyStore is : 
+12:53:01.602 DEBUG: keyStore type is : pkcs12
+12:53:01.602 DEBUG: keyStore provider is : 
+12:53:01.602 DEBUG: init keystore
+12:53:01.602 DEBUG: init keymanager of type SunX509
+12:53:01.917 DEBUG: Create: /var/lib/jenkins/.sonar/cache
+12:53:01.918 INFO: User cache: /var/lib/jenkins/.sonar/cache
+12:53:01.918 DEBUG: Create: /var/lib/jenkins/.sonar/cache/_tmp
+12:53:01.922 DEBUG: Extract sonar-scanner-api-batch in temp...
+12:53:01.930 DEBUG: Get bootstrap index...
+12:53:01.931 DEBUG: Download: http://localhost:9000/batch/index
+12:53:02.085 DEBUG: Get bootstrap completed
+12:53:02.091 DEBUG: Create isolated classloader...
+12:53:02.119 DEBUG: Start temp cleaning...
+12:53:02.123 DEBUG: Temp cleaning done
+12:53:02.124 INFO: Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+12:53:02.124 INFO: Project root configuration file: NONE
+12:53:02.129 DEBUG: Execution getVersion
+12:53:02.153 INFO: Analyzing on SonarQube server 10.6.0.92116
+12:53:02.155 INFO: Default locale: "tr_TR", source code encoding: "UTF-8" (analysis is platform dependent)
+12:53:02.157 DEBUG: Work directory: /var/lib/jenkins/workspace/my-microservices-project/.scannerwork
+12:53:02.158 DEBUG: Execution execute
+12:53:02.161 INFO: ------------------------------------------------------------------------
+12:53:02.161 INFO: EXECUTION FAILURE
+12:53:02.161 INFO: ------------------------------------------------------------------------
+12:53:02.162 INFO: Total time: 1.103s
+12:53:02.205 INFO: Final Memory: 3M/17M
+12:53:02.205 INFO: ------------------------------------------------------------------------
+12:53:02.205 ERROR: Error during SonarScanner execution
+java.lang.UnsupportedClassVersionError: org/sonar/batch/bootstrapper/EnvironmentInformation has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 55.0
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(Unknown Source)
+	at java.base/java.security.SecureClassLoader.defineClass(Unknown Source)
+	at java.base/java.net.URLClassLoader.defineClass(Unknown Source)
+	at java.base/java.net.URLClassLoader$1.run(Unknown Source)
+	at java.base/java.net.URLClassLoader$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.net.URLClassLoader.findClass(Unknown Source)
+	at org.sonarsource.scanner.api.internal.IsolatedClassloader.loadClass(IsolatedClassloader.java:82)
+	at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
+	at org.sonarsource.scanner.api.internal.batch.DefaultBatchFactory.createBatch(DefaultBatchFactory.java:32)
+	at org.sonarsource.scanner.api.internal.batch.BatchIsolatedLauncher.execute(BatchIsolatedLauncher.java:46)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.sonarsource.scanner.api.internal.IsolatedLauncherProxy.invoke(IsolatedLauncherProxy.java:60)
+	at com.sun.proxy.$Proxy0.execute(Unknown Source)
+	at org.sonarsource.scanner.api.EmbeddedScanner.doExecute(EmbeddedScanner.java:189)
+	at org.sonarsource.scanner.api.EmbeddedScanner.execute(EmbeddedScanner.java:138)
+	at org.sonarsource.scanner.cli.Main.execute(Main.java:112)
+	at org.sonarsource.scanner.cli.Main.execute(Main.java:75)
+	at org.sonarsource.scanner.cli.Main.main(Main.java:61)
+[Pipeline] }
+WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
+[Pipeline] // withSonarQubeEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Quality Gate)
+Stage "Quality Gate" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Pipeline complete, cleaning up...
+[Pipeline] echo
+Pipeline failed!
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
