@@ -23,7 +23,7 @@ Checking out Revision 3b8f9cd726cf0030ae963f76a1071be69e6b1d1f (refs/remotes/ori
  > git branch -D main # timeout=10
  > git checkout -b main 3b8f9cd726cf0030ae963f76a1071be69e6b1d1f # timeout=10
 Commit message: "Update package.json"
- > git rev-list --no-walk fcf0a8bfb961f2a43811e58c18c6d6b6bb86db68 # timeout=10
+ > git rev-list --no-walk 3b8f9cd726cf0030ae963f76a1071be69e6b1d1f # timeout=10
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
@@ -37,7 +37,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/user-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t user-service:4 .
++ docker build -t user-service:5 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -50,35 +50,22 @@ Step 2/7 : WORKDIR /usr/src/app
  ---> Using cache
  ---> 2a6919b5b0e4
 Step 3/7 : COPY package*.json ./
+ ---> Using cache
  ---> d772cbac7e47
 Step 4/7 : RUN npm install
- ---> Running in 7b24a6ba91bd
-[91mnpm notice created a lockfile as package-lock.json. You should commit this file.
-[0m[91mnpm WARN user-service@1.0.0 No description
-[0m[91mnpm WARN user-service@1.0.0 No repository field.
-[0m[91mnpm[0m[91m WARN user-service@1.0.0 No license field.
-
-[0madded 64 packages from 41 contributors and audited 64 packages in 12.431s
-
-12 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-
-Removing intermediate container 7b24a6ba91bd
+ ---> Using cache
  ---> 9b87d9623a7b
 Step 5/7 : COPY . .
+ ---> Using cache
  ---> 5e4748fd0dc3
 Step 6/7 : EXPOSE 3001
- ---> Running in 1541b08a93ef
-Removing intermediate container 1541b08a93ef
+ ---> Using cache
  ---> 3cb61a375661
 Step 7/7 : CMD ["node", "index.js"]
- ---> Running in e0cd8ea9c3bd
-Removing intermediate container e0cd8ea9c3bd
+ ---> Using cache
  ---> bd592129debd
 Successfully built bd592129debd
-Successfully tagged user-service:4
+Successfully tagged user-service:5
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -90,7 +77,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/product-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t product-service:4 .
++ docker build -t product-service:5 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -103,35 +90,22 @@ Step 2/7 : WORKDIR /usr/src/app
  ---> Using cache
  ---> 2a6919b5b0e4
 Step 3/7 : COPY package*.json ./
+ ---> Using cache
  ---> bae8eef9d6df
 Step 4/7 : RUN npm install
- ---> Running in b2e0a3e4bfc4
-[91mnpm notice created a lockfile as package-lock.json. You should commit this file.
-[0m[91mnpm WARN product-service@1.0.0 No description
-[0m[91mnpm WARN product-service@1.0.0 No repository field.
-[0m[91mnpm WARN product-service@1.0.0 No license field.
-[0madded 64 packages from 41 contributors and audited 64 packages in 10.867s
-[91m
-[0m
-12 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-
-Removing intermediate container b2e0a3e4bfc4
+ ---> Using cache
  ---> 5c032001b878
 Step 5/7 : COPY . .
+ ---> Using cache
  ---> 3d5830415411
 Step 6/7 : EXPOSE 3002
- ---> Running in e451dcaf068e
-Removing intermediate container e451dcaf068e
+ ---> Using cache
  ---> afe1730efb38
 Step 7/7 : CMD ["node", "index.js"]
- ---> Running in 7fcc1b38b1d3
-Removing intermediate container 7fcc1b38b1d3
+ ---> Using cache
  ---> 3848b67a480d
 Successfully built 3848b67a480d
-Successfully tagged product-service:4
+Successfully tagged product-service:5
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -143,7 +117,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/order-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t order-service:4 .
++ docker build -t order-service:5 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -156,35 +130,22 @@ Step 2/7 : WORKDIR /usr/src/app
  ---> Using cache
  ---> 2a6919b5b0e4
 Step 3/7 : COPY package*.json ./
+ ---> Using cache
  ---> 69d8ef750e47
 Step 4/7 : RUN npm install
- ---> Running in 3b2f9a31cda3
-[91mnpm[0m[91m notice created a lockfile as package-lock.json. You should commit this file.
-[0m[91mnpm WARN order-service@1.0.0 No description
-[0m[91mnpm WARN order-service@1.0.0 No repository field.
-[0m[91mnpm WARN order-service@1.0.0 No license field.
-[0m[91m
-[0madded 64 packages from 41 contributors and audited 64 packages in 11.52s
-
-12 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-
-Removing intermediate container 3b2f9a31cda3
+ ---> Using cache
  ---> 743ccdf00f72
 Step 5/7 : COPY . .
+ ---> Using cache
  ---> df7254a345b3
 Step 6/7 : EXPOSE 3003
- ---> Running in 02d86751bf7a
-Removing intermediate container 02d86751bf7a
+ ---> Using cache
  ---> f153dbe13282
 Step 7/7 : CMD ["node", "index.js"]
- ---> Running in 895156060fca
-Removing intermediate container 895156060fca
+ ---> Using cache
  ---> 162ac0318612
 Successfully built 162ac0318612
-Successfully tagged order-service:4
+Successfully tagged order-service:5
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -196,7 +157,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/api-gateway
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t api-gateway:4 .
++ docker build -t api-gateway:5 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -206,39 +167,25 @@ Sending build context to Docker daemon  5.632kB
 Step 1/7 : FROM node:14
  ---> 1d12470fa662
 Step 2/7 : WORKDIR /usr/serc/app
- ---> Running in 5ae99d839acf
-Removing intermediate container 5ae99d839acf
+ ---> Using cache
  ---> 41fefbbb652f
 Step 3/7 : COPY package*.json ./
+ ---> Using cache
  ---> b1fb8d2a3527
 Step 4/7 : RUN npm install
- ---> Running in 6cb0f1ffd040
-[91mnpm notice created a lockfile as package-lock.json. You should commit this file.
-[0m[91mnpm WARN api-gateway@1.0.0 No description
-[0m[91mnpm WARN api-gateway@1.0.0 No repository field.
-[0m[91mnpm WARN api-gateway@1.0.0 No license field.
-[0m[91m
-[0madded 66 packages from 45 contributors and audited 66 packages in 11.856s
-
-13 packages are looking for funding
-  run `npm fund` for details
-
-found 1 moderate severity vulnerability
-  run `npm audit fix` to fix them, or `npm audit` for details
-Removing intermediate container 6cb0f1ffd040
+ ---> Using cache
  ---> 9b26cb0c3214
 Step 5/7 : COPY . .
+ ---> Using cache
  ---> bfe995a17bce
 Step 6/7 : EXPOSE 3000
- ---> Running in ef6dc7cca28d
-Removing intermediate container ef6dc7cca28d
+ ---> Using cache
  ---> 9d54639e957a
 Step 7/7 : CMD ["node", "index.js"]
- ---> Running in 9d425aa09747
-Removing intermediate container 9d425aa09747
+ ---> Using cache
  ---> 48c15eb58042
 Successfully built 48c15eb58042
-Successfully tagged api-gateway:4
+Successfully tagged api-gateway:5
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -250,6 +197,13 @@ Successfully tagged api-gateway:4
 [Pipeline] stage
 [Pipeline] { (Run SonarQube Analysis)
 [Pipeline] withSonarQubeEnv
+Injecting SonarQube environment variables using the configuration: SonarQube Server
+[Pipeline] {
+[Pipeline] sh
++ sonar-scanner
+/var/lib/jenkins/workspace/my-microservices-project@tmp/durable-de7c5a10/script.sh.copy: 1: sonar-scanner: not found
+[Pipeline] }
+WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
 [Pipeline] // withSonarQubeEnv
 [Pipeline] }
 [Pipeline] // stage
@@ -276,6 +230,5 @@ Pipeline failed!
 [Pipeline] }
 [Pipeline] // node
 [Pipeline] End of Pipeline
-ERROR: SonarQube installation defined in this job (SonarQube) does not match any configured installation. Number of installations that can be configured: 1.
-If you want to reassign jobs to a different SonarQube installation, check the documentation under https://redirect.sonarsource.com/plugins/jenkins.html
+ERROR: script returned exit code 127
 Finished: FAILURE
