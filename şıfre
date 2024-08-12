@@ -8,24 +8,22 @@ Running on Jenkins in /var/lib/jenkins/workspace/my-microservices-project
 [Pipeline] git
 The recommended git tool is: NONE
 No credentials specified
-Cloning the remote Git repository
-Cloning repository https://gitlab.com/serhataltnmks/my-microservices-project.git
- > git init /var/lib/jenkins/workspace/my-microservices-project # timeout=10
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/my-microservices-project/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/my-microservices-project.git # timeout=10
 Fetching upstream changes from https://gitlab.com/serhataltnmks/my-microservices-project.git
  > git --version # timeout=10
  > git --version # 'git version 2.25.1'
  > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/my-microservices-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git config remote.origin.url https://gitlab.com/serhataltnmks/my-microservices-project.git # timeout=10
- > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
-Avoid second fetch
  > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
-Checking out Revision c55e7e23fc88498e9f0e89d5940877ef0fffa0fe (refs/remotes/origin/main)
+Checking out Revision fcf0a8bfb961f2a43811e58c18c6d6b6bb86db68 (refs/remotes/origin/main)
  > git config core.sparsecheckout # timeout=10
- > git checkout -f c55e7e23fc88498e9f0e89d5940877ef0fffa0fe # timeout=10
+ > git checkout -f fcf0a8bfb961f2a43811e58c18c6d6b6bb86db68 # timeout=10
  > git branch -a -v --no-abbrev # timeout=10
- > git checkout -b main c55e7e23fc88498e9f0e89d5940877ef0fffa0fe # timeout=10
-Commit message: "Delete README.md"
-First time build. Skipping changelog.
+ > git branch -D main # timeout=10
+ > git checkout -b main fcf0a8bfb961f2a43811e58c18c6d6b6bb86db68 # timeout=10
+Commit message: "Update Dockerfile"
+ > git rev-list --no-walk c55e7e23fc88498e9f0e89d5940877ef0fffa0fe # timeout=10
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
@@ -39,15 +37,79 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/user-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t user-service:1 .
++ docker build -t user-service:3 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
 
 Sending build context to Docker daemon  4.096kB
 
-Step 1/7 : FROM nod:14
-pull access denied for nod, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+Step 1/7 : FROM node:14
+14: Pulling from library/node
+2ff1d7c41c74: Pulling fs layer
+b253aeafeaa7: Pulling fs layer
+3d2201bd995c: Pulling fs layer
+1de76e268b10: Pulling fs layer
+d9a8df589451: Pulling fs layer
+6f51ee005dea: Pulling fs layer
+5f32ed3c3f27: Pulling fs layer
+0c8cc2f24a4d: Pulling fs layer
+0d27a8e86132: Pulling fs layer
+1de76e268b10: Waiting
+d9a8df589451: Waiting
+6f51ee005dea: Waiting
+5f32ed3c3f27: Waiting
+0c8cc2f24a4d: Waiting
+0d27a8e86132: Waiting
+b253aeafeaa7: Verifying Checksum
+b253aeafeaa7: Download complete
+3d2201bd995c: Verifying Checksum
+2ff1d7c41c74: Verifying Checksum
+2ff1d7c41c74: Download complete
+6f51ee005dea: Verifying Checksum
+6f51ee005dea: Download complete
+1de76e268b10: Verifying Checksum
+1de76e268b10: Download complete
+0c8cc2f24a4d: Verifying Checksum
+0c8cc2f24a4d: Download complete
+0d27a8e86132: Verifying Checksum
+0d27a8e86132: Download complete
+5f32ed3c3f27: Verifying Checksum
+5f32ed3c3f27: Download complete
+d9a8df589451: Verifying Checksum
+d9a8df589451: Download complete
+2ff1d7c41c74: Pull complete
+b253aeafeaa7: Pull complete
+3d2201bd995c: Pull complete
+1de76e268b10: Pull complete
+d9a8df589451: Pull complete
+6f51ee005dea: Pull complete
+5f32ed3c3f27: Pull complete
+0c8cc2f24a4d: Pull complete
+0d27a8e86132: Pull complete
+Digest: sha256:a158d3b9b4e3fa813fa6c8c590b8f0a860e015ad4e59bbce5744d2f6fd8461aa
+Status: Downloaded newer image for node:14
+ ---> 1d12470fa662
+Step 2/7 : WORKDIR /usr/src/app
+ ---> Running in 39f98f6e8f5c
+Removing intermediate container 39f98f6e8f5c
+ ---> 2a6919b5b0e4
+Step 3/7 : COPY package*.json ./
+ ---> 9aa8348800a8
+Step 4/7 : RUN npm install
+ ---> Running in 321ce2b9d753
+[91mnpm ERR! code EJSONPARSE
+npm ERR! file /usr/src/app/package.json
+[0m[91mnpm ERR! JSON.parse Failed to parse json
+npm ERR! JSON.parse Unexpected string in JSON at position 69 while parsing '{
+npm ERR! JSON.parse 	"name": "user-service",
+npm ERR! JSON.parse 	"version": "'
+[0m[91mnpm ERR! JSON.parse Failed to parse package.json data.
+npm ERR! JSON.parse package.json must be actual JSON, not just JavaScript.
+[0m[91m
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /root/.npm/_logs/2024-08-12T07_27_29_243Z-debug.log
+[0mThe command '/bin/sh -c npm install' returned a non-zero code: 1
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
