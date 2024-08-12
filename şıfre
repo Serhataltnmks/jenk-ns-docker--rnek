@@ -1,1 +1,75 @@
-https://3874-176-236-170-162.ngrok-free.app/
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git url: 'https://gitlab.com/kullaniciadi/my-microservices-project.git', branch: 'main'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Docker image'ları oluşturma
+                    dir('user-service') {
+                        docker.build("user-service:${env.BUILD_ID}")
+                    }
+                    dir('product-service') {
+                        docker.build("product-service:${env.BUILD_ID}")
+                    }
+                    dir('order-service') {
+                        docker.build("order-service:${env.BUILD_ID}")
+                    }
+                    dir('api-gateway') {
+                        docker.build("api-gateway:${env.BUILD_ID}")
+                    }
+                }
+            }
+        }
+
+        stage('Run SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner'
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    // SonarQube kalite kapısı (quality gate) sonucunu bekle
+                    def qualityGate = waitForQualityGate()
+
+                    // Kalite kapısı başarısız olursa pipeline'ı sonlandır
+                    if (qualityGate.status != 'OK') {
+                        error "Pipeline failed due to quality gate failure: ${qualityGate.status}"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Build tamamlandığında veya hata olduğunda cleanup işlemleri yap
+            echo 'Pipeline complete, cleaning up...'
+        }
+        success {
+            echo 'Pipeline finished successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
