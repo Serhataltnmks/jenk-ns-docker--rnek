@@ -1,75 +1,89 @@
-pipeline {
-    agent any
+Started by user serhataltinmakas
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/my-microservices-project
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Repository)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://gitlab.com/serhataltnmks/my-microservices-project.git
+ > git init /var/lib/jenkins/workspace/my-microservices-project # timeout=10
+Fetching upstream changes from https://gitlab.com/serhataltnmks/my-microservices-project.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/my-microservices-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/my-microservices-project.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision c55e7e23fc88498e9f0e89d5940877ef0fffa0fe (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f c55e7e23fc88498e9f0e89d5940877ef0fffa0fe # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git checkout -b main c55e7e23fc88498e9f0e89d5940877ef0fffa0fe # timeout=10
+Commit message: "Delete README.md"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/my-microservices-project/user-service
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker build -t user-service:1 .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git url: 'https://gitlab.com/kullaniciadi/my-microservices-project.git', branch: 'main'
-            }
-        }
+Sending build context to Docker daemon  4.096kB
 
-        stage('Build') {
-            steps {
-                script {
-                    // Docker image'ları oluşturma
-                    dir('user-service') {
-                        docker.build("user-service:${env.BUILD_ID}")
-                    }
-                    dir('product-service') {
-                        docker.build("product-service:${env.BUILD_ID}")
-                    }
-                    dir('order-service') {
-                        docker.build("order-service:${env.BUILD_ID}")
-                    }
-                    dir('api-gateway') {
-                        docker.build("api-gateway:${env.BUILD_ID}")
-                    }
-                }
-            }
-        }
-
-        stage('Run SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner'
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                script {
-                    // SonarQube kalite kapısı (quality gate) sonucunu bekle
-                    def qualityGate = waitForQualityGate()
-
-                    // Kalite kapısı başarısız olursa pipeline'ı sonlandır
-                    if (qualityGate.status != 'OK') {
-                        error "Pipeline failed due to quality gate failure: ${qualityGate.status}"
-                    }
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            // Build tamamlandığında veya hata olduğunda cleanup işlemleri yap
-            echo 'Pipeline complete, cleaning up...'
-        }
-        success {
-            echo 'Pipeline finished successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
-}
+Step 1/7 : FROM nod:14
+pull access denied for nod, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run SonarQube Analysis)
+Stage "Run SonarQube Analysis" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Quality Gate)
+Stage "Quality Gate" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+Stage "Deploy" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Pipeline complete, cleaning up...
+[Pipeline] echo
+Pipeline failed!
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
