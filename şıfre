@@ -1,234 +1,68 @@
-Started by user serhataltinmakas
-[Pipeline] Start of Pipeline
-[Pipeline] node
-Running on Jenkins in /var/lib/jenkins/workspace/my-microservices-project
-[Pipeline] {
-[Pipeline] stage
-[Pipeline] { (Clone Repository)
-[Pipeline] git
-The recommended git tool is: NONE
-No credentials specified
- > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/my-microservices-project/.git # timeout=10
-Fetching changes from the remote Git repository
- > git config remote.origin.url https://gitlab.com/serhataltnmks/my-microservices-project.git # timeout=10
-Fetching upstream changes from https://gitlab.com/serhataltnmks/my-microservices-project.git
- > git --version # timeout=10
- > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/my-microservices-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
-Checking out Revision 3b8f9cd726cf0030ae963f76a1071be69e6b1d1f (refs/remotes/origin/main)
- > git config core.sparsecheckout # timeout=10
- > git checkout -f 3b8f9cd726cf0030ae963f76a1071be69e6b1d1f # timeout=10
- > git branch -a -v --no-abbrev # timeout=10
- > git branch -D main # timeout=10
- > git checkout -b main 3b8f9cd726cf0030ae963f76a1071be69e6b1d1f # timeout=10
-Commit message: "Update package.json"
-First time build. Skipping changelog.
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Build)
-[Pipeline] script
-[Pipeline] {
-[Pipeline] dir
-Running in /var/lib/jenkins/workspace/my-microservices-project/user-service
-[Pipeline] {
-[Pipeline] isUnix
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] sh
-+ docker build -t user-service:1 .
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
+pipeline {
+    agent any
 
-Sending build context to Docker daemon  4.096kB
+    environment {
+        // Java 17'yi kullanacak şekilde JAVA_HOME'u ayarlıyoruz
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
+    }
 
-Step 1/7 : FROM node:14
- ---> 1d12470fa662
-Step 2/7 : WORKDIR /usr/src/app
- ---> Using cache
- ---> 2a6919b5b0e4
-Step 3/7 : COPY package*.json ./
- ---> Using cache
- ---> d772cbac7e47
-Step 4/7 : RUN npm install
- ---> Using cache
- ---> 9b87d9623a7b
-Step 5/7 : COPY . .
- ---> Using cache
- ---> 5e4748fd0dc3
-Step 6/7 : EXPOSE 3001
- ---> Using cache
- ---> 3cb61a375661
-Step 7/7 : CMD ["node", "index.js"]
- ---> Using cache
- ---> bd592129debd
-Successfully built bd592129debd
-Successfully tagged user-service:1
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // dir
-[Pipeline] dir
-Running in /var/lib/jenkins/workspace/my-microservices-project/product-service
-[Pipeline] {
-[Pipeline] isUnix
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] sh
-+ docker build -t product-service:1 .
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://gitlab.com/serhataltnmks/my-microservices-project.git'
+            }
+        }
+        stage('Build User Service') {
+            steps {
+                dir('user-service') {
+                    sh 'docker build -t user-service:latest .'
+                }
+            }
+        }
+        stage('Build Product Service') {
+            steps {
+                dir('product-service') {
+                    sh 'docker build -t product-service:latest .'
+                }
+            }
+        }
+        stage('Build Order Service') {
+            steps {
+                dir('order-service') {
+                    sh 'docker build -t order-service:latest .'
+                }
+            }
+        }
+        stage('Build API Gateway') {
+            steps {
+                dir('api-gateway') {
+                    sh 'docker build -t api-gateway:latest .'
+                }
+            }
+        }
+        stage('Run SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube Server') {
+                    sh '/opt/sonar-scanner/bin/sonar-scanner'
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+    }
 
-Sending build context to Docker daemon  4.096kB
-
-Step 1/7 : FROM node:14
- ---> 1d12470fa662
-Step 2/7 : WORKDIR /usr/src/app
- ---> Using cache
- ---> 2a6919b5b0e4
-Step 3/7 : COPY package*.json ./
- ---> Using cache
- ---> bae8eef9d6df
-Step 4/7 : RUN npm install
- ---> Using cache
- ---> 5c032001b878
-Step 5/7 : COPY . .
- ---> Using cache
- ---> 3d5830415411
-Step 6/7 : EXPOSE 3002
- ---> Using cache
- ---> afe1730efb38
-Step 7/7 : CMD ["node", "index.js"]
- ---> Using cache
- ---> 3848b67a480d
-Successfully built 3848b67a480d
-Successfully tagged product-service:1
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // dir
-[Pipeline] dir
-Running in /var/lib/jenkins/workspace/my-microservices-project/order-service
-[Pipeline] {
-[Pipeline] isUnix
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] sh
-+ docker build -t order-service:1 .
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
-
-Sending build context to Docker daemon  4.096kB
-
-Step 1/7 : FROM node:14
- ---> 1d12470fa662
-Step 2/7 : WORKDIR /usr/src/app
- ---> Using cache
- ---> 2a6919b5b0e4
-Step 3/7 : COPY package*.json ./
- ---> Using cache
- ---> 69d8ef750e47
-Step 4/7 : RUN npm install
- ---> Using cache
- ---> 743ccdf00f72
-Step 5/7 : COPY . .
- ---> Using cache
- ---> df7254a345b3
-Step 6/7 : EXPOSE 3003
- ---> Using cache
- ---> f153dbe13282
-Step 7/7 : CMD ["node", "index.js"]
- ---> Using cache
- ---> 162ac0318612
-Successfully built 162ac0318612
-Successfully tagged order-service:1
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // dir
-[Pipeline] dir
-Running in /var/lib/jenkins/workspace/my-microservices-project/api-gateway
-[Pipeline] {
-[Pipeline] isUnix
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] sh
-+ docker build -t api-gateway:1 .
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
-
-Sending build context to Docker daemon  5.632kB
-
-Step 1/7 : FROM node:14
- ---> 1d12470fa662
-Step 2/7 : WORKDIR /usr/serc/app
- ---> Using cache
- ---> 41fefbbb652f
-Step 3/7 : COPY package*.json ./
- ---> Using cache
- ---> b1fb8d2a3527
-Step 4/7 : RUN npm install
- ---> Using cache
- ---> 9b26cb0c3214
-Step 5/7 : COPY . .
- ---> Using cache
- ---> bfe995a17bce
-Step 6/7 : EXPOSE 3000
- ---> Using cache
- ---> 9d54639e957a
-Step 7/7 : CMD ["node", "index.js"]
- ---> Using cache
- ---> 48c15eb58042
-Successfully built 48c15eb58042
-Successfully tagged api-gateway:1
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // dir
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Run SonarQube Analysis)
-[Pipeline] withSonarQubeEnv
-Injecting SonarQube environment variables using the configuration: SonarQube Server
-[Pipeline] {
-[Pipeline] sh
-+ sonar-scanner
-/var/lib/jenkins/workspace/my-microservices-project@tmp/durable-e8ab125f/script.sh.copy: 1: sonar-scanner: not found
-[Pipeline] }
-WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
-[Pipeline] // withSonarQubeEnv
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Quality Gate)
-Stage "Quality Gate" skipped due to earlier failure(s)
-[Pipeline] getContext
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Deploy)
-Stage "Deploy" skipped due to earlier failure(s)
-[Pipeline] getContext
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Declarative: Post Actions)
-[Pipeline] echo
-Pipeline complete, cleaning up...
-[Pipeline] echo
-Pipeline failed!
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-ERROR: script returned exit code 127
-Finished: FAILURE
+    post {
+        always {
+            echo 'Pipeline complete, cleaning up...'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
