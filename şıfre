@@ -1,57 +1,60 @@
 pipeline {
     agent any
 
-    environment {
-        // Java 17'yi kullanacak şekilde JAVA_HOME'u ayarlıyoruz
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
-        PATH = "${JAVA_HOME}/bin:${env.PATH}"
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://gitlab.com/serhataltnmks/my-microservices-project.git'
+                git url: 'https://gitlab.com/kullaniciadi/my-microservices-project.git', branch: 'main'
             }
         }
-        stage('Build User Service') {
+
+        stage('Build') {
             steps {
-                dir('user-service') {
-                    sh 'docker build -t user-service:latest .'
+                script {
+                    // Docker image'ları oluşturma
+                    dir('user-service') {
+                        docker.build("user-service:${env.BUILD_ID}")
+                    }
+                    dir('product-service') {
+                        docker.build("product-service:${env.BUILD_ID}")
+                    }
+                    dir('order-service') {
+                        docker.build("order-service:${env.BUILD_ID}")
+                    }
+                    dir('api-gateway') {
+                        docker.build("api-gateway:${env.BUILD_ID}")
+                    }
                 }
             }
         }
-        stage('Build Product Service') {
-            steps {
-                dir('product-service') {
-                    sh 'docker build -t product-service:latest .'
-                }
-            }
-        }
-        stage('Build Order Service') {
-            steps {
-                dir('order-service') {
-                    sh 'docker build -t order-service:latest .'
-                }
-            }
-        }
-        stage('Build API Gateway') {
-            steps {
-                dir('api-gateway') {
-                    sh 'docker build -t api-gateway:latest .'
-                }
-            }
-        }
+
         stage('Run SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube Server') {
-                    sh '/opt/sonar-scanner/bin/sonar-scanner'
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner'
                 }
             }
         }
+
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    // SonarQube kalite kapısı (quality gate) sonucunu bekle
+                    def qualityGate = waitForQualityGate()
+
+                    // Kalite kapısı başarısız olursa pipeline'ı sonlandır
+                    if (qualityGate.status != 'OK') {
+                        error "Pipeline failed due to quality gate failure: ${qualityGate.status}"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d'
                 }
             }
         }
@@ -59,7 +62,11 @@ pipeline {
 
     post {
         always {
+            // Build tamamlandığında veya hata olduğunda cleanup işlemleri yap
             echo 'Pipeline complete, cleaning up...'
+        }
+        success {
+            echo 'Pipeline finished successfully!'
         }
         failure {
             echo 'Pipeline failed!'
