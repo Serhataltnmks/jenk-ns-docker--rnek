@@ -1,51 +1,75 @@
-15:09:13.613 ERROR: Error during SonarScanner execution
-java.lang.UnsupportedClassVersionError: org/sonar/batch/bootstrapper/EnvironmentInformation has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 55.0
-	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
-	at java.base/java.lang.ClassLoader.defineClass(Unknown Source)
-	at java.base/java.security.SecureClassLoader.defineClass(Unknown Source)
-	at java.base/java.net.URLClassLoader.defineClass(Unknown Source)
-	at java.base/java.net.URLClassLoader$1.run(Unknown Source)
-	at java.base/java.net.URLClassLoader$1.run(Unknown Source)
-	at java.base/java.security.AccessController.doPrivileged(Native Method)
-	at java.base/java.net.URLClassLoader.findClass(Unknown Source)
-	at org.sonarsource.scanner.api.internal.IsolatedClassloader.loadClass(IsolatedClassloader.java:82)
-	at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
-	at org.sonarsource.scanner.api.internal.batch.DefaultBatchFactory.createBatch(DefaultBatchFactory.java:32)
-	at org.sonarsource.scanner.api.internal.batch.BatchIsolatedLauncher.execute(BatchIsolatedLauncher.java:46)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
-	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
-	at org.sonarsource.scanner.api.internal.IsolatedLauncherProxy.invoke(IsolatedLauncherProxy.java:60)
-	at com.sun.proxy.$Proxy0.execute(Unknown Source)
-	at org.sonarsource.scanner.api.EmbeddedScanner.doExecute(EmbeddedScanner.java:189)
-	at org.sonarsource.scanner.api.EmbeddedScanner.execute(EmbeddedScanner.java:138)
-	at org.sonarsource.scanner.cli.Main.execute(Main.java:112)
-	at org.sonarsource.scanner.cli.Main.execute(Main.java:75)
-	at org.sonarsource.scanner.cli.Main.main(Main.java:61)
-[Pipeline] }
-WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
-[Pipeline] // withSonarQubeEnv
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Quality Gate)
-Stage "Quality Gate" skipped due to earlier failure(s)
-[Pipeline] getContext
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Declarative: Post Actions)
-[Pipeline] echo
-Pipeline complete, cleaning up...
-[Pipeline] echo
-Pipeline failed!
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-ERROR: script returned exit code 1
-Finished: FAILURE
+pipeline {
+    agent any
+
+    environment {
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://gitlab.com/serhataltnmks/my-microservices-project.git'
+            }
+        }
+        stage('Build Services') {
+            parallel {
+                stage('Build User Service') {
+                    steps {
+                        dir('user-service') {
+                            sh 'docker build -t user-service:latest .'
+                        }
+                    }
+                }
+                stage('Build Product Service') {
+                    steps {
+                        dir('product-service') {
+                            sh 'docker build -t product-service:latest .'
+                        }
+                    }
+                }
+                stage('Build Order Service') {
+                    steps {
+                        dir('order-service') {
+                            sh 'docker build -t order-service:latest .'
+                        }
+                    }
+                }
+                stage('Build API Gateway') {
+                    steps {
+                        dir('api-gateway') {
+                            sh 'docker build -t api-gateway:latest .'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Run SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube Server') {
+                    sh '''
+                    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+                    export PATH=$JAVA_HOME/bin:$PATH
+                    /opt/sonar-scanner/bin/sonar-scanner -X
+                    '''
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline complete, cleaning up...'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
