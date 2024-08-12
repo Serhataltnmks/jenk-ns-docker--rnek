@@ -1,9 +1,12 @@
 pipeline {
     agent any
+
     environment {
-        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64'
+        // Java 17'yi kullanacak şekilde JAVA_HOME'u ayarlıyoruz
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -41,15 +44,19 @@ pipeline {
         stage('Run SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube Server') {
-                    sh '''
-                        echo "Using Java version:"
-                        java -version
-                        /opt/sonar-scanner/bin/sonar-scanner -X
-                    '''
+                    sh '/opt/sonar-scanner/bin/sonar-scanner'
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
     }
+
     post {
         always {
             echo 'Pipeline complete, cleaning up...'
