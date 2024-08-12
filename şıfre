@@ -39,7 +39,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/user-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t user-service:12 .
++ docker build -t user-service:13 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -67,7 +67,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> bd592129debd
 Successfully built bd592129debd
-Successfully tagged user-service:12
+Successfully tagged user-service:13
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -87,7 +87,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/product-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t product-service:12 .
++ docker build -t product-service:13 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -115,7 +115,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> 3848b67a480d
 Successfully built 3848b67a480d
-Successfully tagged product-service:12
+Successfully tagged product-service:13
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -135,7 +135,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/order-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t order-service:12 .
++ docker build -t order-service:13 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -163,7 +163,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> 162ac0318612
 Successfully built 162ac0318612
-Successfully tagged order-service:12
+Successfully tagged order-service:13
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -183,7 +183,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/api-gateway
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t api-gateway:12 .
++ docker build -t api-gateway:13 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -211,7 +211,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> 48c15eb58042
 Successfully built 48c15eb58042
-Successfully tagged api-gateway:12
+Successfully tagged api-gateway:13
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -232,43 +232,26 @@ Using Java version:
 openjdk version "17.0.12" 2024-07-16
 OpenJDK Runtime Environment (build 17.0.12+7-Ubuntu-1ubuntu220.04)
 OpenJDK 64-Bit Server VM (build 17.0.12+7-Ubuntu-1ubuntu220.04, mixed mode, sharing)
-+ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-+ export PATH=/usr/lib/jvm/java-17-openjdk-amd64/bin:/usr/lib/jvm/java-17-openjdk-amd64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-+ /opt/sonar-scanner/bin/sonar-scanner -X
-12:08:46.858 INFO: Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
-12:08:46.862 INFO: Project root configuration file: NONE
-12:08:47.008 INFO: SonarScanner 4.6.2.2472
-12:08:47.008 INFO: Java 11.0.11 AdoptOpenJDK (64-bit)
-12:08:47.008 INFO: Linux 5.15.0-117-generic amd64
-12:08:47.590 DEBUG: keyStore is : 
-12:08:47.591 DEBUG: keyStore type is : pkcs12
-12:08:47.591 DEBUG: keyStore provider is : 
-12:08:47.591 DEBUG: init keystore
-12:08:47.592 DEBUG: init keymanager of type SunX509
-12:08:47.997 DEBUG: Create: /var/lib/jenkins/.sonar/cache
-12:08:47.998 INFO: User cache: /var/lib/jenkins/.sonar/cache
-12:08:47.999 DEBUG: Create: /var/lib/jenkins/.sonar/cache/_tmp
-12:08:48.004 DEBUG: Extract sonar-scanner-api-batch in temp...
-12:08:48.015 DEBUG: Get bootstrap index...
-12:08:48.015 DEBUG: Download: http://localhost:9000/batch/index
-12:08:48.187 DEBUG: Get bootstrap completed
-12:08:48.202 DEBUG: Create isolated classloader...
-12:08:48.221 DEBUG: Start temp cleaning...
-12:08:48.226 DEBUG: Temp cleaning done
-12:08:48.227 INFO: Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
-12:08:48.230 INFO: Project root configuration file: NONE
-12:08:48.235 DEBUG: Execution getVersion
-12:08:48.281 INFO: Analyzing on SonarQube server 10.6.0.92116
-12:08:48.282 INFO: Default locale: "tr_TR", source code encoding: "UTF-8" (analysis is platform dependent)
-12:08:48.283 DEBUG: Work directory: /var/lib/jenkins/workspace/my-microservices-project/.scannerwork
-12:08:48.286 DEBUG: Execution execute
-12:08:48.289 INFO: ------------------------------------------------------------------------
-12:08:48.290 INFO: EXECUTION FAILURE
-12:08:48.291 INFO: ------------------------------------------------------------------------
-12:08:48.297 INFO: Total time: 1.583s
-12:08:48.358 INFO: Final Memory: 3M/17M
-12:08:48.358 INFO: ------------------------------------------------------------------------
-12:08:48.358 ERROR: Error during SonarScanner execution
++ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
++ export PATH=/usr/lib/jvm/java-11-openjdk-amd64/bin:/usr/lib/jvm/java-17-openjdk-amd64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ /opt/sonar-scanner/bin/sonar-scanner
+INFO: Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+INFO: Project root configuration file: NONE
+INFO: SonarScanner 4.6.2.2472
+INFO: Java 11.0.11 AdoptOpenJDK (64-bit)
+INFO: Linux 5.15.0-117-generic amd64
+INFO: User cache: /var/lib/jenkins/.sonar/cache
+INFO: Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+INFO: Project root configuration file: NONE
+INFO: Analyzing on SonarQube server 10.6.0.92116
+INFO: Default locale: "tr_TR", source code encoding: "UTF-8" (analysis is platform dependent)
+INFO: ------------------------------------------------------------------------
+INFO: EXECUTION FAILURE
+INFO: ------------------------------------------------------------------------
+INFO: Total time: 1.573s
+INFO: Final Memory: 3M/17M
+INFO: ------------------------------------------------------------------------
+ERROR: Error during SonarScanner execution
 java.lang.UnsupportedClassVersionError: org/sonar/batch/bootstrapper/EnvironmentInformation has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 55.0
 	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
 	at java.base/java.lang.ClassLoader.defineClass(Unknown Source)
@@ -293,6 +276,8 @@ java.lang.UnsupportedClassVersionError: org/sonar/batch/bootstrapper/Environment
 	at org.sonarsource.scanner.cli.Main.execute(Main.java:112)
 	at org.sonarsource.scanner.cli.Main.execute(Main.java:75)
 	at org.sonarsource.scanner.cli.Main.main(Main.java:61)
+ERROR: 
+ERROR: Re-run SonarScanner using the -X switch to enable full debug logging.
 [Pipeline] }
 WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
 [Pipeline] // withSonarQubeEnv
