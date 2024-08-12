@@ -1,5 +1,5 @@
 Started by user serhataltinmakas
-[Pipeline] Start of Pipeline
+[Pipeline] Start of Pipeline (hide)
 [Pipeline] node
 Running on Jenkins in /var/lib/jenkins/workspace/my-microservices-project
 [Pipeline] {
@@ -37,7 +37,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/user-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t user-service:7 .
++ docker build -t user-service:9 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -65,7 +65,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> bd592129debd
 Successfully built bd592129debd
-Successfully tagged user-service:7
+Successfully tagged user-service:9
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -77,7 +77,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/product-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t product-service:7 .
++ docker build -t product-service:9 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -105,7 +105,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> 3848b67a480d
 Successfully built 3848b67a480d
-Successfully tagged product-service:7
+Successfully tagged product-service:9
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -117,7 +117,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/order-service
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t order-service:7 .
++ docker build -t order-service:9 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -145,7 +145,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> 162ac0318612
 Successfully built 162ac0318612
-Successfully tagged order-service:7
+Successfully tagged order-service:9
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -157,7 +157,7 @@ Running in /var/lib/jenkins/workspace/my-microservices-project/api-gateway
 [Pipeline] withEnv
 [Pipeline] {
 [Pipeline] sh
-+ docker build -t api-gateway:7 .
++ docker build -t api-gateway:9 .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:
             https://docs.docker.com/go/buildx/
@@ -185,7 +185,7 @@ Step 7/7 : CMD ["node", "index.js"]
  ---> Using cache
  ---> 48c15eb58042
 Successfully built 48c15eb58042
-Successfully tagged api-gateway:7
+Successfully tagged api-gateway:9
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
@@ -214,8 +214,8 @@ INFO: Default locale: "tr_TR", source code encoding: "UTF-8" (analysis is platfo
 INFO: ------------------------------------------------------------------------
 INFO: EXECUTION FAILURE
 INFO: ------------------------------------------------------------------------
-INFO: Total time: 5.114s
-INFO: Final Memory: 3M/17M
+INFO: Total time: 1.435s
+INFO: Final Memory: 3M/14M
 INFO: ------------------------------------------------------------------------
 ERROR: Error during SonarScanner execution
 java.lang.UnsupportedClassVersionError: org/sonar/batch/bootstrapper/EnvironmentInformation has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 55.0
