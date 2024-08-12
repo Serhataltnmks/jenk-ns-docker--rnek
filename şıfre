@@ -1,28 +1,15 @@
 pipeline {
     agent any
     stages {
-        stage('Clone Repository') {
-            steps {
-                git branch: 'master', url: 'https://gitlab.com/username/simple-html-project.git'
-            }
-        }
-        stage('Build') {
-            steps {
-                echo 'Building the project...'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing the project...'
-            }
-        }
         stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'SonarQube Scanner'
             }
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=simple-html-project -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=<your-sonarqube-token>"
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=simple-html-project -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
+                    }
                 }
             }
         }
