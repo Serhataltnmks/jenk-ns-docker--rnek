@@ -1,62 +1,40 @@
-const express = require('express');
-const app = express();
-const axios = require('axios');
+http - start an HTTP tunnel
 
-app.use(express.json());
+USAGE:
+  ngrok http [address:port | port] [flags]
 
-const USER_SERVICE_URL = 'http://user-service:3001';
-const PRODUCT_SERVICE_URL = 'http://product-service:3002';
-const ORDER_SERVICE_URL = 'http://order-service:3003';
+AUTHOR:
+  ngrok - <support@ngrok.com>
 
-app.post('/register', (req, res) => {
-  axios.post(`${USER_SERVICE_URL}/register`, req.body).then(response => {
-    res.send(response.data);
-  }).catch(error => {
-    res.status(500).send(error.message);
-  });
-});
+COMMANDS: 
+  config          update or migrate ngrok's configuration file
+  http            start an HTTP tunnel
+  tcp             start a TCP tunnel
+  tunnel          start a tunnel for use with a tunnel-group backend
 
-app.get('/users', (req, res) => {
-  axios.get(`${USER_SERVICE_URL}/users`).then(response => {
-    res.send(response.data);
-  }).catch(error => {
-    res.status(500).send(error.message);
-  });
-});
+EXAMPLES: 
+  ngrok http 80                                                 # secure public URL for port 80 web server
+  ngrok http --domain baz.ngrok.dev 8080                        # port 8080 available at baz.ngrok.dev
+  ngrok tcp 22                                                  # tunnel arbitrary TCP traffic to port 22
+  ngrok http 80 --oauth=google --oauth-allow-email=foo@foo.com  # secure your app with oauth
 
-app.post('/products', (req, res) => {
-  axios.post(`${PRODUCT_SERVICE_URL}/products`, req.body).then(response => {
-    res.send(response.data);
-  }).catch(error => {
-    res.status(500).send(error.message);
-  });
-});
+Paid Features: 
+  ngrok http 80 --domain mydomain.com                           # run ngrok with your own custom domain
+  ngrok http 80 --allow-cidr 2600:8c00::a03c:91ee:fe69:9695/32  # run ngrok with IP policy restrictions
+  Upgrade your account at https://dashboard.ngrok.com/billing/subscription to access paid features
 
-app.get('/products', (req, res) => {
-  axios.get(`${PRODUCT_SERVICE_URL}/products`).then(response => {
-    res.send(response.data);
-  }).catch(error => {
-    res.status(500).send(error.message);
-  });
-});
+Upgrade your account at https://dashboard.ngrok.com/billing/subscription to access paid features
 
-app.post('/orders', (req, res) => {
-  axios.post(`${ORDER_SERVICE_URL}/orders`, req.body).then(response => {
-    res.send(response.data);
-  }).catch(error => {
-    res.status(500).send(error.message);
-  });
-});
+Flags:
+  -h, --help      help for ngrok
 
-app.get('/orders', (req, res) => {
-  axios.get(`${ORDER_SERVICE_URL}/orders`).then(response => {
-    res.send(response.data);
-  }).catch(error => {
-    res.status(500).send(error.message);
-  });
-});
+Use "ngrok [command] --help" for more information about a command.
 
-const port = 3000;
-app.listen(port, () => {
-  console.log(`API Gateway running on port ${port}`);
-});
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:  
