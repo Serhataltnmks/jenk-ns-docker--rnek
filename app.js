@@ -34,5 +34,6 @@ def get_users():
     return users_schema.jsonify(all_users)
 
 if __name__ == '__main__':
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     app.run(host='0.0.0.0', port=5003)
