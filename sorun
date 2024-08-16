@@ -1,57 +1,23 @@
-pipeline {
-    agent any
-
-    environment {
-        SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_KEY = 'ecommerce-project'
-    }
-
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://gitlab.com/serhataltnmks/ecommerce-project.git'
-            }
-        }
-        stage('Build Docker Images') {
-            steps {
-                script {
-                    sh 'docker-compose build'
-                }
-            }
-        }
-        stage('Run Docker Containers') {
-            steps {
-                script {
-                    sh 'docker-compose up -d'
-                }
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONAR_TOKEN}"
-                    }
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    timeout(time: 10, unit: 'MINUTES') {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline stopped due to Quality Gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline finished.'
-        }
-    }
-}
+INFO] Scanning for projects...
+[ERROR] [ERROR] Some problems were encountered while processing the POMs:
+[ERROR] Malformed POM /home/serhat/project/user-service/pom.xml: Expected root element 'project' but found 'dependencies' (position: START_TAG seen <dependencies>... @1:14)  @ /home/serhat/project/user-service/pom.xml, line 1, column 14
+[ERROR] 'modelVersion' is missing. @ line 1, column 14
+[FATAL] 'groupId' is missing. @ line 1, column 14
+[FATAL] 'artifactId' is missing. @ line 1, column 14
+[FATAL] 'version' is missing. @ line 1, column 14
+ @ 
+[ERROR] The build could not read 1 project -> [Help 1]
+[ERROR]   
+[ERROR]   The project [unknown-group-id]:[unknown-artifact-id]:[unknown-version] (/home/serhat/project/user-service/pom.xml) has 5 errors
+[ERROR]     Malformed POM /home/serhat/project/user-service/pom.xml: Expected root element 'project' but found 'dependencies' (position: START_TAG seen <dependencies>... @1:14)  @ /home/serhat/project/user-service/pom.xml, line 1, column 14 -> [Help 2]
+[ERROR]     'modelVersion' is missing. @ line 1, column 14
+[ERROR]     'groupId' is missing. @ line 1, column 14
+[ERROR]     'artifactId' is missing. @ line 1, column 14
+[ERROR]     'version' is missing. @ line 1, column 14
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/ProjectBuildingException
+[ERROR] [Help 2] http://cwiki.apache.org/confluence/display/MAVEN/ModelParseException
