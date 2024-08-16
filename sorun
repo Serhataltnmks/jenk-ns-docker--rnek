@@ -1,17 +1,23 @@
-version: '3.8'
-
-services:
-  product-service:
-    build: ./product-service
-    ports:
-      - "5001:5001"
-
-  order-service:
-    build: ./order-service
-    ports:
-      - "5002:5002"
-
-  user-service:
-    build: ./user-service
-    ports:
-      - "5003:5003"
+user-service_1     |  * Serving Flask app 'app'
+user-service_1     |  * Debug mode: off
+user-service_1     | WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+user-service_1     |  * Running on all addresses (0.0.0.0)
+user-service_1     |  * Running on http://127.0.0.1:5003
+user-service_1     |  * Running on http://172.18.0.2:5003
+user-service_1     | Press CTRL+C to quit
+product-service_1  |  * Serving Flask app 'app'
+product-service_1  |  * Debug mode: off
+product-service_1  | WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+product-service_1  |  * Running on http://127.0.0.1:5001
+product-service_1  | Press CTRL+C to quit
+order-service_1    |  * Serving Flask app 'app'
+order-service_1    |  * Debug mode: off
+order-service_1    | WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+order-service_1    |  * Running on all addresses (0.0.0.0)
+order-service_1    |  * Running on http://127.0.0.1:5002
+order-service_1    |  * Running on http://172.18.0.4:5002
+order-service_1    | Press CTRL+C to quit
+order-service_1    | 172.18.0.1 - - [16/Aug/2024 09:38:05] "GET / HTTP/1.1" 404 -
+order-service_1    | 172.18.0.1 - - [16/Aug/2024 09:38:05] "GET /favicon.ico HTTP/1.1" 404 -
+user-service_1     | 172.18.0.1 - - [16/Aug/2024 09:38:30] "GET / HTTP/1.1" 404 -
+user-service_1     | 172.18.0.1 - - [16/Aug/2024 09:38:31] "GET /favicon.ico HTTP/1.1" 404 -
