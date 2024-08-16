@@ -1,48 +1,17 @@
-pipeline {
-    agent any
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ecommerce</groupId>
+    <artifactId>ecommerce-project</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-    environment {
-        SONAR_SCANNER = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-        SONAR_TOKEN = credentials('sonarqube-token')
-    }
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git url: 'https://gitlab.com/serhataltnmks/ecommerce-project.git', branch: 'master'
-            }
-        }
-
-        stage('Build Docker Images') {
-            steps {
-                sh 'docker-compose build'
-            }
-        }
-
-        stage('Run Docker Containers') {
-            steps {
-                sh 'docker-compose up -d'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "${SONAR_SCANNER}/bin/sonar-scanner \
-                        -Dsonar.projectKey=ecommerce-project \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.login=${SONAR_TOKEN}"
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-    }
-}
+    <dependencies>
+        <!-- Flask-SQLAlchemy için gerekli Java kütüphanelerini eklemeniz gerekebilir -->
+    </dependencies>
+</project>
