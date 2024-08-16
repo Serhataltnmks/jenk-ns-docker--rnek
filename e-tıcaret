@@ -1,57 +1,28 @@
-pipeline {
-    agent any
-
-    environment {
-        SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_KEY = 'ecommerce-project'
-    }
-
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://gitlab.com/serhataltnmks/ecommerce-project.git'
-            }
-        }
-        stage('Build Docker Images') {
-            steps {
-                script {
-                    sh 'docker-compose build'
-                }
-            }
-        }
-        stage('Run Docker Containers') {
-            steps {
-                script {
-                    sh 'docker-compose up -d'
-                }
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONAR_TOKEN}"
-                    }
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline stopped due to Quality Gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline finished.'
-        }
-    }
-}
+erhat@serhat-VirtualBox:~$ sudo docker search maven
+[sudo] serhat için parola: 
+NAME                                       DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED
+maven                                      Apache Maven is a software project managemen…   1597      [OK]       
+jenkins/jnlp-agent-maven                   A JNLP-based agent with Maven 3 built in        9                    
+jenkinsciinfra/inbound-agent-maven                                                         0                    
+vespaengine/vespa-pipeline                 Docker image with supported versions of Mave…   0                    
+paketobuildpacks/maven                                                                     0                    
+noenv/maven                                Maven Docker Image                              0                    
+localstack/java-maven-node-python          Base image with pre-baked core infrastructure   4                    
+eucm/maven                                 Maven 3.3.9 with Java jdk 8 Docker image rep…   1                    [OK]
+chainguard/maven                           Minimal image with Maven build system.          0                    
+jenkins4eval/jnlp-agent-maven                                                              0                    
+eclipse/centos_jdk8                        CentOS, JDK8, Maven 3, git, curl, nmap, mc, …   5                    [OK]
+leplusorg/maven-check-versions             Docker container to run the Maven Versions p…   0                    
+dspace/dspace-dependencies                 This image caches the maven dependencies tha…   1                    
+codecentric/springboot-maven3-centos       STI builder image for building and running m…   13                   [OK]
+okteto/maven                                                                               0                    
+eclipse/hadoop-dev                         Ubuntu 14.04, Maven 3.3.9, JDK8, Tomcat 8       0                    [OK]
+vmware/maven-xenon                                                                         0                    
+semoss/docker-tomcat                       Tomcat, Java, Maven, and Git on top of debian   0                    [OK]
+eclipse/alpine_jdk8                        Based on Alpine 3.3. JDK 1.8, Maven 3.3.9, T…   1                    [OK]
+eclipse/ubuntu_jdk8                        Ubuntu, JDK8, Maven 3, git, curl, nmap, mc, …   17                   [OK]
+atlassian/maven                            Apache Maven running under a pre-created non…   6                    [OK]
+observabilitystack/graalvm-maven-builder                                                   0                    
+jenkins4eval/maven-windows-jdk-11                                                          0                    
+okteto/java-maven-getting-started                                                          0                    
+jumpserver/maven                           Apache Maven is a software project managemen…   0  
