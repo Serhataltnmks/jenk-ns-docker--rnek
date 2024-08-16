@@ -1,39 +1,48 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+pipeline {
+    agent any
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.db'
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
+    environment {
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONARQUBE_KEY = 'ecommerce-project'
+    }
 
-class Product(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    price = db.Column(db.Float)
-
-class ProductSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Product
-
-product_schema = ProductSchema()
-products_schema = ProductSchema(many=True)
-
-@app.route('/product', methods=['POST'])
-def add_product():
-    name = request.json['name']
-    price = request.json['price']
-    new_product = Product(name=name, price=price)
-    db.session.add(new_product)
-    db.session.commit()
-    return product_schema.jsonify(new_product)
-
-@app.route('/products', methods=['GET'])
-def get_products():
-    all_products = Product.query.all()
-    return products_schema.jsonify(all_products)
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(host='0.0.0.0', port=5001)
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://gitlab.com/serhataltnmks/ecommerce-project.git'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        stage('Run Docker Containers') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+            }
+        }
+    }
+}
