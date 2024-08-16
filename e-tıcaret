@@ -1,287 +1,57 @@
-Started by user serhat a
+pipeline {
+    agent any
 
-Obtained Jenkinsfile from git https://gitlab.com/serhataltnmks/ecommerce-project
-[Pipeline] Start of Pipeline
-[Pipeline] node
-Running on Jenkins
- in /var/lib/jenkins/workspace/ecommerce-project-pipeline
-[Pipeline] {
-[Pipeline] stage
-[Pipeline] { (Declarative: Checkout SCM)
-[Pipeline] checkout
-Selected Git installation does not exist. Using Default
-The recommended git tool is: NONE
-No credentials specified
- > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
-Fetching changes from the remote Git repository
- > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project # timeout=10
-Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project
- > git --version # timeout=10
- > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
-Checking out Revision 2dee7cbea06dae2431b263eac74385836e2c7e99 (refs/remotes/origin/master)
- > git config core.sparsecheckout # timeout=10
- > git checkout -f 2dee7cbea06dae2431b263eac74385836e2c7e99 # timeout=10
-Commit message: "Update Jenkinsfile"
- > git rev-list --no-walk a42f6ed3d375a4d1293507820a1b8596f6aa830c # timeout=10
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] stage
-[Pipeline] { (Clone Repository)
-[Pipeline] git
-Selected Git installation does not exist. Using Default
-The recommended git tool is: NONE
-No credentials specified
- > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
-Fetching changes from the remote Git repository
- > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project.git # timeout=10
-Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project.git
- > git --version # timeout=10
- > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
-Checking out Revision 2dee7cbea06dae2431b263eac74385836e2c7e99 (refs/remotes/origin/master)
- > git config core.sparsecheckout # timeout=10
- > git checkout -f 2dee7cbea06dae2431b263eac74385836e2c7e99 # timeout=10
- > git branch -a -v --no-abbrev # timeout=10
- > git branch -D master # timeout=10
- > git checkout -b master 2dee7cbea06dae2431b263eac74385836e2c7e99 # timeout=10
-Commit message: "Update Jenkinsfile"
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Build Docker Images)
-[Pipeline] script
-[Pipeline] {
-[Pipeline] sh
-+ docker-compose build
-Building product-service
-Step 1/6 : FROM python:3.8-slim
- ---> e7fd04b8ffc7
-Step 2/6 : WORKDIR /app
- ---> Using cache
- ---> a06b6bd6e0c0
-Step 3/6 : COPY requirements.txt requirements.txt
- ---> Using cache
- ---> 94d9a1f3c5ee
-Step 4/6 : RUN pip install -r requirements.txt
- ---> Using cache
- ---> 94b50f6a7689
-Step 5/6 : COPY . .
- ---> Using cache
- ---> 30a75a3835af
-Step 6/6 : CMD ["python3", "app.py"]
- ---> Using cache
- ---> 33a3610e5f4c
+    environment {
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONARQUBE_KEY = 'ecommerce-project'
+    }
 
-Successfully built 33a3610e5f4c
-Successfully tagged ecommerce-project-pipeline_product-service:latest
-Building order-service
-Step 1/6 : FROM python:3.8-slim
- ---> e7fd04b8ffc7
-Step 2/6 : WORKDIR /app
- ---> Using cache
- ---> a06b6bd6e0c0
-Step 3/6 : COPY requirements.txt requirements.txt
- ---> Using cache
- ---> da75cbed77c4
-Step 4/6 : RUN pip install -r requirements.txt
- ---> Using cache
- ---> 533e8754d9a3
-Step 5/6 : COPY . .
- ---> Using cache
- ---> 35dc5dea9977
-Step 6/6 : CMD ["python3", "app.py"]
- ---> Using cache
- ---> 8c1cb02e898e
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://gitlab.com/serhataltnmks/ecommerce-project.git'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        stage('Run Docker Containers') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline stopped due to Quality Gate failure: ${qg.status}"
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-Successfully built 8c1cb02e898e
-Successfully tagged ecommerce-project-pipeline_order-service:latest
-Building user-service
-Step 1/6 : FROM python:3.8-slim
- ---> e7fd04b8ffc7
-Step 2/6 : WORKDIR /app
- ---> Using cache
- ---> a06b6bd6e0c0
-Step 3/6 : COPY requirements.txt requirements.txt
- ---> Using cache
- ---> 94d9a1f3c5ee
-Step 4/6 : RUN pip install -r requirements.txt
- ---> Using cache
- ---> 94b50f6a7689
-Step 5/6 : COPY . .
- ---> Using cache
- ---> 14641a0c86a2
-Step 6/6 : CMD ["python3", "app.py"]
- ---> Using cache
- ---> 4bd6bb67659c
-
-Successfully built 4bd6bb67659c
-Successfully tagged ecommerce-project-pipeline_user-service:latest
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Run Docker Containers)
-[Pipeline] script
-[Pipeline] {
-[Pipeline] sh
-+ docker-compose up -d
-
-ecommerce-project-pipeline_order-service_1 is up-to-date
-ecommerce-project-pipeline_user-service_1 is up-to-date
-ecommerce-project-pipeline_product-service_1 is up-to-date
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (SonarQube Analysis)
-[Pipeline] withSonarQubeEnv
-Injecting SonarQube environment variables using the configuration: SonarQube
-[Pipeline] {
-[Pipeline] withCredentials
-Masking supported pattern matches of $SONAR_TOKEN
-[Pipeline] {
-
-[Pipeline] sh
-Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
-		 Affected argument(s) used the following variable(s): [SONAR_TOKEN]
-		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
-+ mvn sonar:sonar -Dsonar.projectKey=ecommerce-project -Dsonar.host.url=http://localhost:9000 -Dsonar.token=****
-
-[[1;34mINFO[m] Scanning for projects...
-
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m------------------< [0;36mcom.ecommerce:ecommerce-project[0;1m >-------------------[m
-[[1;34mINFO[m] [1mBuilding ecommerce-project 1.0-SNAPSHOT[m
-[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32msonar-maven-plugin:4.0.0.4121:sonar[m [1m(default-cli)[m @ [36mecommerce-project[0;1m ---[m
-
-[[1;33mWARNING[m] 15:21:49.243 Using an unspecified version instead of an explicit plugin version may introduce breaking analysis changes at an unwanted time. It is highly recommended to use an explicit version, e.g. 'org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121'.
-[[1;34mINFO[m] 15:21:49.359 Java 17.0.12 Ubuntu (64-bit)
-[[1;34mINFO[m] 15:21:49.360 Linux 5.15.0-117-generic (amd64)
-
-[[1;34mINFO[m] 15:21:50.241 User cache: /var/lib/jenkins/.sonar/cache
-[[1;34mINFO[m] 15:21:50.617 Communicating with SonarQube Server 10.6.0.92116
-[[1;34mINFO[m] 15:21:50.685 Default locale: "tr_TR", source code encoding: "UTF-8" (analysis is platform dependent)
-
-[[1;34mINFO[m] 15:21:54.017 Load global settings
-[[1;34mINFO[m] 15:21:54.342 Load global settings (done) | time=339ms
-
-[[1;34mINFO[m] 15:21:54.453 Server id: 147B411E-AZFaKdEcK_YPNat1Cqu4
-[[1;34mINFO[m] 15:21:54.505 Loading required plugins
-[[1;34mINFO[m] 15:21:54.512 Load plugins index
-[[1;34mINFO[m] 15:21:54.588 Load plugins index (done) | time=76ms
-[[1;34mINFO[m] 15:21:54.588 Load/download plugins
-[[1;34mINFO[m] 15:21:54.640 Load/download plugins (done) | time=52ms
-
-[[1;34mINFO[m] 15:21:55.916 Process project properties
-[[1;34mINFO[m] 15:21:55.944 Process project properties (done) | time=28ms
-[[1;34mINFO[m] 15:21:55.987 Project key: ecommerce-project
-[[1;34mINFO[m] 15:21:55.988 Base dir: /var/lib/jenkins/workspace/ecommerce-project-pipeline
-[[1;34mINFO[m] 15:21:55.988 Working dir: /var/lib/jenkins/workspace/ecommerce-project-pipeline/target/sonar
-[[1;34mINFO[m] 15:21:56.015 Load project settings for component key: 'ecommerce-project'
-[[1;34mINFO[m] 15:21:56.076 Load project settings for component key: 'ecommerce-project' (done) | time=61ms
-[[1;34mINFO[m] 15:21:56.169 Load quality profiles
-[[1;34mINFO[m] 15:21:56.565 Load quality profiles (done) | time=397ms
-[[1;34mINFO[m] 15:21:56.613 Auto-configuring with CI 'Jenkins'
-
-[[1;34mINFO[m] 15:21:56.734 Load active rules
-
-[[1;34mINFO[m] 15:22:17.817 Load active rules (done) | time=21083ms
-[[1;34mINFO[m] 15:22:17.831 Load analysis cache
-[[1;34mINFO[m] 15:22:17.858 Load analysis cache (404) | time=27ms
-[[1;34mINFO[m] 15:22:18.044 Preprocessing files...
-[[1;34mINFO[m] 15:22:18.454 1 language detected in 1 preprocessed file
-[[1;34mINFO[m] 15:22:18.455 0 files ignored because of scm ignore settings
-[[1;34mINFO[m] 15:22:18.464 Loading plugins for detected languages
-[[1;34mINFO[m] 15:22:18.467 Load/download plugins
-[[1;34mINFO[m] 15:22:18.468 Load/download plugins (done) | time=1ms
-[[1;34mINFO[m] 15:22:18.690 Load project repositories
-[[1;34mINFO[m] 15:22:18.765 Load project repositories (done) | time=75ms
-[[1;34mINFO[m] 15:22:18.843 Indexing files...
-[[1;34mINFO[m] 15:22:18.847 Project configuration:
-[[1;34mINFO[m] 15:22:18.872 1 file indexed
-[[1;34mINFO[m] 15:22:18.875 Quality profile for xml: Sonar way
-[[1;34mINFO[m] 15:22:18.879 ------------- Run sensors on module ecommerce-project
-[[1;34mINFO[m] 15:22:18.999 Load metrics repository
-[[1;34mINFO[m] 15:22:19.061 Load metrics repository (done) | time=56ms
-
-[[1;34mINFO[m] 15:22:20.709 Sensor XML Sensor [xml]
-[[1;34mINFO[m] 15:22:20.738 1 source file to be analyzed
-[[1;34mINFO[m] 15:22:21.400 1/1 source file has been analyzed
-[[1;34mINFO[m] 15:22:21.401 Sensor XML Sensor [xml] (done) | time=693ms
-[[1;34mINFO[m] 15:22:21.403 Sensor JaCoCo XML Report Importer [jacoco]
-[[1;34mINFO[m] 15:22:21.406 'sonar.coverage.jacoco.xmlReportPaths' is not defined. Using default locations: target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml
-[[1;34mINFO[m] 15:22:21.408 No report imported, no coverage information will be imported by JaCoCo XML Report Importer
-[[1;34mINFO[m] 15:22:21.409 Sensor JaCoCo XML Report Importer [jacoco] (done) | time=7ms
-[[1;34mINFO[m] 15:22:21.410 Sensor Java Config Sensor [iac]
-[[1;34mINFO[m] 15:22:21.437 0 source files to be analyzed
-
-[[1;34mINFO[m] 15:22:21.471 0/0 source files have been analyzed
-[[1;34mINFO[m] 15:22:21.477 Sensor Java Config Sensor [iac] (done) | time=66ms
-[[1;34mINFO[m] 15:22:21.479 Sensor IaC Docker Sensor [iac]
-[[1;34mINFO[m] 15:22:21.487 0 source files to be analyzed
-[[1;34mINFO[m] 15:22:21.706 0/0 source files have been analyzed
-[[1;34mINFO[m] 15:22:21.707 Sensor IaC Docker Sensor [iac] (done) | time=228ms
-[[1;34mINFO[m] 15:22:21.708 Sensor TextAndSecretsSensor [text]
-[[1;34mINFO[m] 15:22:21.709 Available processors: 4
-[[1;34mINFO[m] 15:22:21.709 Using 4 threads for analysis.
-
-[[1;34mINFO[m] 15:22:23.091 The property "sonar.tests" is not set. To improve the analysis accuracy, we categorize a file as a test file if any of the following is true:
-  * The filename starts with "test"
-  * The filename contains "test." or "tests."
-  * Any directory in the file path is named: "doc", "docs", "test" or "tests"
-  * Any directory in the file path has a name ending in "test" or "tests"
-
-[[1;34mINFO[m] 15:22:23.169 Using git CLI to retrieve untracked files
-[[1;34mINFO[m] 15:22:23.204 Analyzing language associated files and files included via "sonar.text.inclusions" that are tracked by git
-[[1;34mINFO[m] 15:22:23.273 1 source file to be analyzed
-[[1;34mINFO[m] 15:22:23.326 1/1 source file has been analyzed
-[[1;34mINFO[m] 15:22:23.331 Sensor TextAndSecretsSensor [text] (done) | time=1622ms
-[[1;34mINFO[m] 15:22:23.355 ------------- Run sensors on project
-[[1;34mINFO[m] 15:22:23.454 Sensor Zero Coverage Sensor
-[[1;34mINFO[m] 15:22:23.456 Sensor Zero Coverage Sensor (done) | time=2ms
-[[1;34mINFO[m] 15:22:23.486 CPD Executor Calculating CPD for 0 files
-[[1;34mINFO[m] 15:22:23.489 CPD Executor CPD calculation finished (done) | time=0ms
-[[1;34mINFO[m] 15:22:23.500 SCM revision ID '2dee7cbea06dae2431b263eac74385836e2c7e99'
-
-[[1;34mINFO[m] 15:22:23.886 Analysis report generated in 346ms, dir size=198.7 kB
-[[1;34mINFO[m] 15:22:23.946 Analysis report compressed in 57ms, zip size=20.0 kB
-[[1;34mINFO[m] 15:22:24.092 Analysis report uploaded in 142ms
-[[1;34mINFO[m] 15:22:24.095 ANALYSIS SUCCESSFUL, you can find the results at: http://localhost:9000/dashboard?id=ecommerce-project
-[[1;34mINFO[m] 15:22:24.096 Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
-[[1;34mINFO[m] 15:22:24.097 More about the report processing at http://localhost:9000/api/ce/task?id=e726ac91-2c8e-4aba-80ea-5a333281ee79
-[[1;34mINFO[m] 15:22:24.116 Analysis total time: 29.359 s
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  36.585 s
-[[1;34mINFO[m] Finished at: 2024-08-16T15:22:24+03:00
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[Pipeline] }
-[Pipeline] // withCredentials
-
-[Pipeline] }
-[Pipeline] // withSonarQubeEnv
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Quality Gate)
-[Pipeline] script
-[Pipeline] {
-[Pipeline] timeout
-Timeout set to expire in 1 saat 0 dakika
-[Pipeline] {
-[Pipeline] waitForQualityGate
-Checking status of SonarQube task 'e726ac91-2c8e-4aba-80ea-5a333281ee79' on server 'SonarQube'
-
-SonarQube task 'e726ac91-2c8e-4aba-80ea-5a333281ee79' status is 'IN_PROGRESS'
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+    }
+}
