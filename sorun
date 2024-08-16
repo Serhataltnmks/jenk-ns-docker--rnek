@@ -1,17 +1,57 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ecommerce</groupId>
-    <artifactId>ecommerce-project</artifactId>
-    <version>1.0-SNAPSHOT</version>
+pipeline {
+    agent any
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
+    environment {
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONARQUBE_KEY = 'ecommerce-project'
+    }
 
-    <dependencies>
-        <!-- Flask-SQLAlchemy için gerekli Java kütüphanelerini eklemeniz gerekebilir -->
-    </dependencies>
-</project>
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://gitlab.com/serhataltnmks/ecommerce-project.git'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        stage('Run Docker Containers') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 10, unit: 'MINUTES') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline stopped due to Quality Gate failure: ${qg.status}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+    }
+}
