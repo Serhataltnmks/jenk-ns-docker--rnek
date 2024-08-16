@@ -1,1 +1,864 @@
+Started by user serhat a
+
+Obtained Jenkinsfile from git https://gitlab.com/serhataltnmks/ecommerce-project
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/lib/jenkins/workspace/ecommerce-project-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project # timeout=10
+Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision a42f6ed3d375a4d1293507820a1b8596f6aa830c (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f a42f6ed3d375a4d1293507820a1b8596f6aa830c # timeout=10
+Commit message: "Added pom.xml file"
+ > git rev-list --no-walk eaf73502649f536cdc144f8cf58be194b124b719 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Repository)
+[Pipeline] git
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project.git # timeout=10
+Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision a42f6ed3d375a4d1293507820a1b8596f6aa830c (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f a42f6ed3d375a4d1293507820a1b8596f6aa830c # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master a42f6ed3d375a4d1293507820a1b8596f6aa830c # timeout=10
+Commit message: "Added pom.xml file"
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker Images)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ docker-compose build
+
+Building product-service
+Step 1/6 : FROM python:3.8-slim
+ ---> e7fd04b8ffc7
+Step 2/6 : WORKDIR /app
+ ---> Using cache
+ ---> a06b6bd6e0c0
+Step 3/6 : COPY requirements.txt requirements.txt
+ ---> Using cache
+ ---> 94d9a1f3c5ee
+Step 4/6 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 94b50f6a7689
+Step 5/6 : COPY . .
+ ---> Using cache
+ ---> 30a75a3835af
+Step 6/6 : CMD ["python3", "app.py"]
+ ---> Using cache
+ ---> 33a3610e5f4c
+
+Successfully built 33a3610e5f4c
+Successfully tagged ecommerce-project-pipeline_product-service:latest
+Building order-service
+Step 1/6 : FROM python:3.8-slim
+ ---> e7fd04b8ffc7
+Step 2/6 : WORKDIR /app
+ ---> Using cache
+ ---> a06b6bd6e0c0
+Step 3/6 : COPY requirements.txt requirements.txt
+ ---> Using cache
+ ---> da75cbed77c4
+Step 4/6 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 533e8754d9a3
+Step 5/6 : COPY . .
+ ---> Using cache
+ ---> 35dc5dea9977
+Step 6/6 : CMD ["python3", "app.py"]
+ ---> Using cache
+ ---> 8c1cb02e898e
+
+Successfully built 8c1cb02e898e
+Successfully tagged ecommerce-project-pipeline_order-service:latest
+Building user-service
+Step 1/6 : FROM python:3.8-slim
+ ---> e7fd04b8ffc7
+Step 2/6 : WORKDIR /app
+ ---> Using cache
+ ---> a06b6bd6e0c0
+Step 3/6 : COPY requirements.txt requirements.txt
+ ---> Using cache
+ ---> 94d9a1f3c5ee
+Step 4/6 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 94b50f6a7689
+Step 5/6 : COPY . .
+ ---> Using cache
+ ---> 14641a0c86a2
+Step 6/6 : CMD ["python3", "app.py"]
+ ---> Using cache
+ ---> 4bd6bb67659c
+
+Successfully built 4bd6bb67659c
+Successfully tagged ecommerce-project-pipeline_user-service:latest
+[Pipeline] }
+
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Docker Containers)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ docker-compose up -d
+
+Starting ecommerce-project-pipeline_product-service_1 ... 
+Starting ecommerce-project-pipeline_user-service_1    ... 
+Starting ecommerce-project-pipeline_order-service_1   ... 
+
+[3A[2K
+Starting ecommerce-project-pipeline_product-service_1 ... [32mdone[0m
+[3B[2A[2K
+Starting ecommerce-project-pipeline_user-service_1    ... [32mdone[0m
+[2B[1A[2K
+Starting ecommerce-project-pipeline_order-service_1   ... [32mdone[0m
+[1B
+
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SonarQube Analysis)
+[Pipeline] withSonarQubeEnv
+Injecting SonarQube environment variables using the configuration: SonarQube
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $SONAR_TOKEN
+[Pipeline] {
+[Pipeline] sh
+
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [SONAR_TOKEN]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ mvn sonar:sonar -Dsonar.projectKey=ecommerce-project -Dsonar.host.url=http://localhost:9000 -Dsonar.login=****
+
+[[1;34mINFO[m] Scanning for projects...
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/2.6/maven-resources-plugin-2.6.pom
+
+Progress (1): 2.8/8.1 kB
+Progress (1): 5.5/8.1 kB
+Progress (1): 8.1 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/2.6/maven-resources-plugin-2.6.pom (8.1 kB at 9.0 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/2.6/maven-resources-plugin-2.6.jar
+Progress (1): 2.8/30 kB
+Progress (1): 5.5/30 kB
+Progress (1): 8.3/30 kB
+Progress (1): 11/30 kB 
+Progress (1): 14/30 kB
+Progress (1): 17/30 kB
+Progress (1): 20/30 kB
+Progress (1): 23/30 kB
+Progress (1): 25/30 kB
+Progress (1): 28/30 kB
+Progress (1): 30 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/2.6/maven-resources-plugin-2.6.jar (30 kB at 135 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/2.4/maven-jar-plugin-2.4.pom
+Progress (1): 2.8/5.8 kB
+Progress (1): 5.5/5.8 kB
+Progress (1): 5.8 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/2.4/maven-jar-plugin-2.4.pom (5.8 kB at 43 kB/s)
+
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/2.4/maven-jar-plugin-2.4.jar
+Progress (1): 2.8/34 kB
+Progress (1): 5.5/34 kB
+Progress (1): 8.3/34 kB
+Progress (1): 11/34 kB 
+Progress (1): 14/34 kB
+Progress (1): 18/34 kB
+Progress (1): 22/34 kB
+Progress (1): 26/34 kB
+Progress (1): 30/34 kB
+Progress (1): 34 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/2.4/maven-jar-plugin-2.4.jar (34 kB at 241 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.1/maven-compiler-plugin-3.1.pom
+Progress (1): 4.1/10 kB
+Progress (1): 8.2/10 kB
+Progress (1): 10 kB    
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.1/maven-compiler-plugin-3.1.pom (10 kB at 79 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.1/maven-compiler-plugin-3.1.jar
+Progress (1): 4.1/43 kB
+Progress (1): 8.2/43 kB
+Progress (1): 12/43 kB 
+Progress (1): 16/43 kB
+Progress (1): 20/43 kB
+Progress (1): 25/43 kB
+Progress (1): 29/43 kB
+Progress (1): 33/43 kB
+Progress (1): 37/43 kB
+Progress (1): 41/43 kB
+Progress (1): 43 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.1/maven-compiler-plugin-3.1.jar (43 kB at 283 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.12.4/maven-surefire-plugin-2.12.4.pom
+Progress (1): 4.1/10 kB
+Progress (1): 8.2/10 kB
+Progress (1): 10 kB    
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.12.4/maven-surefire-plugin-2.12.4.pom (10 kB at 82 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/2.12.4/surefire-2.12.4.pom
+Progress (1): 4.1/14 kB
+Progress (1): 8.2/14 kB
+Progress (1): 12/14 kB 
+Progress (1): 14 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/2.12.4/surefire-2.12.4.pom (14 kB at 112 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.12.4/maven-surefire-plugin-2.12.4.jar
+Progress (1): 4.1/30 kB
+Progress (1): 8.2/30 kB
+Progress (1): 12/30 kB 
+Progress (1): 16/30 kB
+Progress (1): 20/30 kB
+Progress (1): 25/30 kB
+Progress (1): 29/30 kB
+Progress (1): 30 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.12.4/maven-surefire-plugin-2.12.4.jar (30 kB at 224 kB/s)
+
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------< [0;36mcom.ecommerce:ecommerce-project[0;1m >-------------------[m
+[[1;34mINFO[m] [1mBuilding ecommerce-project 1.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32msonar-maven-plugin:4.0.0.4121:sonar[m [1m(default-cli)[m @ [36mecommerce-project[0;1m ---[m
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-sec-dispatcher/1.4/plexus-sec-dispatcher-1.4.pom
+Progress (1): 3.0 kB
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-sec-dispatcher/1.4/plexus-sec-dispatcher-1.4.pom (3.0 kB at 24 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonatype/spice/spice-parent/12/spice-parent-12.pom
+Progress (1): 4.1/6.8 kB
+Progress (1): 6.8 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonatype/spice/spice-parent/12/spice-parent-12.pom (6.8 kB at 51 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonatype/forge/forge-parent/4/forge-parent-4.pom
+Progress (1): 4.1/8.4 kB
+Progress (1): 8.2/8.4 kB
+Progress (1): 8.4 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonatype/forge/forge-parent/4/forge-parent-4.pom (8.4 kB at 70 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5.pom
+Progress (1): 4.1/5.1 kB
+Progress (1): 5.1 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5.pom (5.1 kB at 47 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/1.0.11/plexus-1.0.11.pom
+Progress (1): 4.1/9.0 kB
+Progress (1): 8.2/9.0 kB
+Progress (1): 9.0 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/1.0.11/plexus-1.0.11.pom (9.0 kB at 75 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4.pom
+Progress (1): 2.1 kB
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4.pom (2.1 kB at 18 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonarsource/scanner/api/sonar-scanner-api/2.16.3.1081/sonar-scanner-api-2.16.3.1081.pom
+
+Progress (1): 4.1/5.2 kB
+Progress (1): 5.2 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonarsource/scanner/api/sonar-scanner-api/2.16.3.1081/sonar-scanner-api-2.16.3.1081.pom (5.2 kB at 46 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonarsource/scanner/api/sonar-scanner-api-parent/2.16.3.1081/sonar-scanner-api-parent-2.16.3.1081.pom
+Progress (1): 4.1/4.8 kB
+Progress (1): 4.8 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonarsource/scanner/api/sonar-scanner-api-parent/2.16.3.1081/sonar-scanner-api-parent-2.16.3.1081.pom (4.8 kB at 46 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonarsource/parent/parent/60.0.52/parent-60.0.52.pom
+Progress (1): 4.1/32 kB
+Progress (1): 8.2/32 kB
+Progress (1): 12/32 kB 
+Progress (1): 16/32 kB
+Progress (1): 20/32 kB
+Progress (1): 25/32 kB
+Progress (1): 29/32 kB
+Progress (1): 32 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonarsource/parent/parent/60.0.52/parent-60.0.52.pom (32 kB at 242 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom
+Progress (1): 4.1/17 kB
+Progress (1): 8.2/17 kB
+Progress (1): 12/17 kB 
+Progress (1): 16/17 kB
+Progress (1): 17 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom (17 kB at 153 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom
+Progress (1): 4.1/31 kB
+Progress (1): 8.2/31 kB
+Progress (1): 12/31 kB 
+Progress (1): 16/31 kB
+Progress (1): 20/31 kB
+Progress (1): 24/31 kB
+Progress (1): 28/31 kB
+Progress (1): 31 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom (31 kB at 269 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/apache/7/apache-7.pom
+Progress (1): 4.1/14 kB
+Progress (1): 8.2/14 kB
+Progress (1): 12/14 kB 
+Progress (1): 14 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/apache/7/apache-7.pom (14 kB at 119 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-sec-dispatcher/1.4/plexus-sec-dispatcher-1.4.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/sonarsource/scanner/api/sonar-scanner-api/2.16.3.1081/sonar-scanner-api-2.16.3.1081.jar
+Downloading from central: https://repo.maven.apache.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar
+Progress (1): 4.1/28 kB
+Progress (1): 8.2/28 kB
+Progress (1): 12/28 kB 
+Progress (1): 16/28 kB
+Progress (1): 20/28 kB
+Progress (1): 25/28 kB
+Progress (1): 28 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-sec-dispatcher/1.4/plexus-sec-dispatcher-1.4.jar (28 kB at 188 kB/s)
+Progress (1): 2.8/284 kB
+Progress (1): 5.5/284 kB
+Progress (2): 5.5/284 kB | 2.8/625 kB
+Progress (2): 5.5/284 kB | 5.5/625 kB
+Progress (2): 5.5/284 kB | 8.3/625 kB
+Progress (3): 5.5/284 kB | 8.3/625 kB | 4.1/251 kB
+Progress (3): 5.5/284 kB | 8.3/625 kB | 8.2/251 kB
+Progress (3): 5.5/284 kB | 8.3/625 kB | 12/251 kB 
+Progress (3): 5.5/284 kB | 8.3/625 kB | 16/251 kB
+Progress (3): 5.5/284 kB | 8.3/625 kB | 20/251 kB
+Progress (3): 5.5/284 kB | 8.3/625 kB | 25/251 kB
+Progress (3): 5.5/284 kB | 8.3/625 kB | 29/251 kB
+
+Progress (3): 8.3/284 kB | 8.3/625 kB | 33/251 kB
+Progress (3): 8.3/284 kB | 11/625 kB | 33/251 kB 
+Progress (3): 8.3/284 kB | 14/625 kB | 33/251 kB
+Progress (3): 8.3/284 kB | 14/625 kB | 37/251 kB
+Progress (3): 8.3/284 kB | 14/625 kB | 41/251 kB
+Progress (3): 8.3/284 kB | 14/625 kB | 45/251 kB
+Progress (3): 8.3/284 kB | 14/625 kB | 49/251 kB
+Progress (3): 8.3/284 kB | 14/625 kB | 53/251 kB
+Progress (3): 11/284 kB | 14/625 kB | 53/251 kB 
+Progress (3): 11/284 kB | 14/625 kB | 57/251 kB
+Progress (3): 11/284 kB | 14/625 kB | 61/251 kB
+Progress (4): 11/284 kB | 14/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 18/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 22/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 26/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 30/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 34/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 38/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 42/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 47/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 51/625 kB | 61/251 kB | 2.8/13 kB
+Progress (4): 11/284 kB | 51/625 kB | 61/251 kB | 5.5/13 kB
+Progress (4): 11/284 kB | 51/625 kB | 66/251 kB | 5.5/13 kB
+Progress (4): 11/284 kB | 51/625 kB | 66/251 kB | 8.3/13 kB
+Progress (4): 11/284 kB | 51/625 kB | 66/251 kB | 11/13 kB 
+Progress (4): 11/284 kB | 51/625 kB | 66/251 kB | 13 kB   
+Progress (4): 14/284 kB | 51/625 kB | 66/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 70/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 74/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 78/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 82/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 86/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 90/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 94/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 98/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 102/251 kB | 13 kB
+Progress (4): 14/284 kB | 51/625 kB | 106/251 kB | 13 kB
+Progress (4): 14/284 kB | 55/625 kB | 106/251 kB | 13 kB
+Progress (4): 14/284 kB | 59/625 kB | 106/251 kB | 13 kB
+Progress (4): 14/284 kB | 63/625 kB | 106/251 kB | 13 kB
+                                                        
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4.jar (13 kB at 33 kB/s)
+Progress (3): 14/284 kB | 63/625 kB | 111/251 kB
+Progress (3): 18/284 kB | 63/625 kB | 111/251 kB
+Progress (3): 18/284 kB | 63/625 kB | 115/251 kB
+Progress (3): 18/284 kB | 63/625 kB | 119/251 kB
+Progress (3): 18/284 kB | 63/625 kB | 123/251 kB
+Progress (3): 18/284 kB | 63/625 kB | 127/251 kB
+Progress (3): 18/284 kB | 67/625 kB | 127/251 kB
+Progress (3): 18/284 kB | 71/625 kB | 127/251 kB
+Progress (3): 18/284 kB | 71/625 kB | 131/251 kB
+Progress (3): 18/284 kB | 71/625 kB | 135/251 kB
+Progress (3): 18/284 kB | 71/625 kB | 139/251 kB
+Progress (3): 18/284 kB | 71/625 kB | 143/251 kB
+Progress (3): 18/284 kB | 71/625 kB | 147/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 147/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 151/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 155/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 159/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 163/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 167/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 172/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 176/251 kB
+Progress (3): 22/284 kB | 71/625 kB | 180/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 180/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 184/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 188/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 192/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 196/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 200/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 204/251 kB
+Progress (3): 22/284 kB | 75/625 kB | 208/251 kB
+Progress (3): 26/284 kB | 75/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 75/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 79/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 83/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 88/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 92/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 96/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 100/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 104/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 108/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 112/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 116/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 120/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 124/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 128/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 133/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 137/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 141/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 145/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 149/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 153/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 157/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 161/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 165/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 169/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 174/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 178/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 182/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 186/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 190/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 194/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 198/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 202/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 206/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 210/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 214/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 219/625 kB | 208/251 kB
+Progress (3): 30/284 kB | 219/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 223/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 227/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 231/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 235/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 239/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 243/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 247/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 251/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 255/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 260/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 264/625 kB | 213/251 kB
+Progress (3): 30/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 34/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 38/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 42/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 47/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 51/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 55/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 59/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 63/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 67/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 71/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 213/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 217/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 221/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 225/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 229/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 233/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 237/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 241/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 245/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 249/251 kB
+Progress (3): 75/284 kB | 268/625 kB | 251 kB    
+Progress (3): 75/284 kB | 272/625 kB | 251 kB
+Progress (3): 75/284 kB | 276/625 kB | 251 kB
+Progress (3): 79/284 kB | 276/625 kB | 251 kB
+Progress (3): 79/284 kB | 280/625 kB | 251 kB
+Progress (3): 79/284 kB | 284/625 kB | 251 kB
+Progress (3): 83/284 kB | 284/625 kB | 251 kB
+Progress (3): 88/284 kB | 284/625 kB | 251 kB
+Progress (3): 92/284 kB | 284/625 kB | 251 kB
+Progress (3): 96/284 kB | 284/625 kB | 251 kB
+Progress (3): 100/284 kB | 284/625 kB | 251 kB
+Progress (3): 104/284 kB | 284/625 kB | 251 kB
+Progress (3): 108/284 kB | 284/625 kB | 251 kB
+Progress (3): 108/284 kB | 288/625 kB | 251 kB
+Progress (3): 108/284 kB | 292/625 kB | 251 kB
+Progress (3): 108/284 kB | 296/625 kB | 251 kB
+Progress (3): 108/284 kB | 301/625 kB | 251 kB
+Progress (3): 108/284 kB | 305/625 kB | 251 kB
+Progress (3): 108/284 kB | 309/625 kB | 251 kB
+Progress (3): 112/284 kB | 309/625 kB | 251 kB
+Progress (3): 112/284 kB | 313/625 kB | 251 kB
+Progress (3): 116/284 kB | 313/625 kB | 251 kB
+Progress (3): 116/284 kB | 317/625 kB | 251 kB
+Progress (3): 116/284 kB | 321/625 kB | 251 kB
+Progress (3): 116/284 kB | 325/625 kB | 251 kB
+Progress (3): 116/284 kB | 329/625 kB | 251 kB
+Progress (3): 116/284 kB | 333/625 kB | 251 kB
+Progress (3): 116/284 kB | 337/625 kB | 251 kB
+Progress (3): 116/284 kB | 341/625 kB | 251 kB
+Progress (3): 116/284 kB | 346/625 kB | 251 kB
+Progress (3): 116/284 kB | 350/625 kB | 251 kB
+Progress (3): 116/284 kB | 354/625 kB | 251 kB
+Progress (3): 116/284 kB | 358/625 kB | 251 kB
+Progress (3): 116/284 kB | 362/625 kB | 251 kB
+Progress (3): 116/284 kB | 366/625 kB | 251 kB
+Progress (3): 116/284 kB | 370/625 kB | 251 kB
+Progress (3): 116/284 kB | 374/625 kB | 251 kB
+Progress (3): 116/284 kB | 378/625 kB | 251 kB
+Progress (3): 116/284 kB | 382/625 kB | 251 kB
+Progress (3): 116/284 kB | 387/625 kB | 251 kB
+Progress (3): 116/284 kB | 391/625 kB | 251 kB
+Progress (3): 116/284 kB | 395/625 kB | 251 kB
+Progress (3): 116/284 kB | 399/625 kB | 251 kB
+Progress (3): 116/284 kB | 403/625 kB | 251 kB
+Progress (3): 116/284 kB | 407/625 kB | 251 kB
+Progress (3): 116/284 kB | 411/625 kB | 251 kB
+Progress (3): 120/284 kB | 411/625 kB | 251 kB
+Progress (3): 120/284 kB | 415/625 kB | 251 kB
+Progress (3): 120/284 kB | 419/625 kB | 251 kB
+Progress (3): 120/284 kB | 423/625 kB | 251 kB
+Progress (3): 124/284 kB | 423/625 kB | 251 kB
+Progress (3): 128/284 kB | 423/625 kB | 251 kB
+Progress (3): 128/284 kB | 427/625 kB | 251 kB
+Progress (3): 128/284 kB | 432/625 kB | 251 kB
+Progress (3): 128/284 kB | 436/625 kB | 251 kB
+Progress (3): 128/284 kB | 440/625 kB | 251 kB
+Progress (3): 128/284 kB | 444/625 kB | 251 kB
+Progress (3): 133/284 kB | 444/625 kB | 251 kB
+Progress (3): 137/284 kB | 444/625 kB | 251 kB
+Progress (3): 141/284 kB | 444/625 kB | 251 kB
+                                              
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5.jar (251 kB at 425 kB/s)
+Progress (2): 141/284 kB | 448/625 kB
+Progress (2): 145/284 kB | 448/625 kB
+Progress (2): 145/284 kB | 452/625 kB
+Progress (2): 145/284 kB | 456/625 kB
+Progress (2): 145/284 kB | 460/625 kB
+Progress (2): 145/284 kB | 464/625 kB
+Progress (2): 145/284 kB | 468/625 kB
+Progress (2): 145/284 kB | 473/625 kB
+Progress (2): 145/284 kB | 477/625 kB
+Progress (2): 145/284 kB | 481/625 kB
+Progress (2): 145/284 kB | 485/625 kB
+Progress (2): 145/284 kB | 489/625 kB
+Progress (2): 145/284 kB | 493/625 kB
+Progress (2): 145/284 kB | 497/625 kB
+Progress (2): 145/284 kB | 501/625 kB
+Progress (2): 145/284 kB | 505/625 kB
+Progress (2): 145/284 kB | 509/625 kB
+Progress (2): 149/284 kB | 509/625 kB
+Progress (2): 149/284 kB | 514/625 kB
+Progress (2): 153/284 kB | 514/625 kB
+Progress (2): 157/284 kB | 514/625 kB
+Progress (2): 157/284 kB | 518/625 kB
+Progress (2): 161/284 kB | 518/625 kB
+Progress (2): 161/284 kB | 522/625 kB
+Progress (2): 165/284 kB | 522/625 kB
+Progress (2): 165/284 kB | 526/625 kB
+Progress (2): 169/284 kB | 526/625 kB
+Progress (2): 174/284 kB | 526/625 kB
+Progress (2): 178/284 kB | 526/625 kB
+Progress (2): 178/284 kB | 530/625 kB
+Progress (2): 182/284 kB | 530/625 kB
+Progress (2): 186/284 kB | 530/625 kB
+Progress (2): 186/284 kB | 534/625 kB
+Progress (2): 186/284 kB | 538/625 kB
+Progress (2): 186/284 kB | 542/625 kB
+Progress (2): 186/284 kB | 546/625 kB
+Progress (2): 186/284 kB | 550/625 kB
+Progress (2): 186/284 kB | 554/625 kB
+Progress (2): 186/284 kB | 559/625 kB
+Progress (2): 186/284 kB | 563/625 kB
+Progress (2): 186/284 kB | 567/625 kB
+Progress (2): 186/284 kB | 571/625 kB
+Progress (2): 186/284 kB | 575/625 kB
+Progress (2): 186/284 kB | 579/625 kB
+Progress (2): 186/284 kB | 583/625 kB
+Progress (2): 186/284 kB | 587/625 kB
+Progress (2): 186/284 kB | 591/625 kB
+Progress (2): 186/284 kB | 595/625 kB
+Progress (2): 186/284 kB | 600/625 kB
+Progress (2): 186/284 kB | 604/625 kB
+Progress (2): 186/284 kB | 608/625 kB
+Progress (2): 186/284 kB | 612/625 kB
+Progress (2): 186/284 kB | 616/625 kB
+Progress (2): 186/284 kB | 620/625 kB
+Progress (2): 186/284 kB | 624/625 kB
+Progress (2): 186/284 kB | 625 kB    
+Progress (2): 190/284 kB | 625 kB
+Progress (2): 194/284 kB | 625 kB
+Progress (2): 198/284 kB | 625 kB
+Progress (2): 202/284 kB | 625 kB
+Progress (2): 206/284 kB | 625 kB
+Progress (2): 210/284 kB | 625 kB
+Progress (2): 214/284 kB | 625 kB
+Progress (2): 219/284 kB | 625 kB
+Progress (2): 223/284 kB | 625 kB
+Progress (2): 227/284 kB | 625 kB
+Progress (2): 231/284 kB | 625 kB
+Progress (2): 235/284 kB | 625 kB
+Progress (2): 239/284 kB | 625 kB
+Progress (2): 243/284 kB | 625 kB
+Progress (2): 247/284 kB | 625 kB
+Progress (2): 251/284 kB | 625 kB
+Progress (2): 255/284 kB | 625 kB
+Progress (2): 260/284 kB | 625 kB
+                                 
+Downloaded from central: https://repo.maven.apache.org/maven2/org/sonarsource/scanner/api/sonar-scanner-api/2.16.3.1081/sonar-scanner-api-2.16.3.1081.jar (625 kB at 855 kB/s)
+Progress (1): 264/284 kB
+Progress (1): 268/284 kB
+Progress (1): 272/284 kB
+Progress (1): 276/284 kB
+Progress (1): 280/284 kB
+Progress (1): 284/284 kB
+Progress (1): 284 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar (284 kB at 367 kB/s)
+[[1;33mWARNING[m] 15:12:26.487 Using an unspecified version instead of an explicit plugin version may introduce breaking analysis changes at an unwanted time. It is highly recommended to use an explicit version, e.g. 'org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121'.
+[[1;34mINFO[m] 15:12:26.522 Java 17.0.12 Ubuntu (64-bit)
+[[1;34mINFO[m] 15:12:26.523 Linux 5.15.0-117-generic (amd64)
+[[1;34mINFO[m] 15:12:26.627 User cache: /var/lib/jenkins/.sonar/cache
+
+[[1;34mINFO[m] 15:12:27.779 Communicating with SonarQube Server 10.6.0.92116
+[[1;34mINFO[m] 15:12:27.819 Default locale: "tr_TR", source code encoding: "UTF-8" (analysis is platform dependent)
+
+[[1;34mINFO[m] 15:12:29.704 Load global settings
+[[1;34mINFO[m] 15:12:29.953 Load global settings (done) | time=253ms
+[[1;34mINFO[m] 15:12:30.028 Server id: 147B411E-AZFaKdEcK_YPNat1Cqu4
+
+[[1;34mINFO[m] 15:12:30.063 Loading required plugins
+[[1;34mINFO[m] 15:12:30.064 Load plugins index
+[[1;34mINFO[m] 15:12:30.186 Load plugins index (done) | time=122ms
+[[1;34mINFO[m] 15:12:30.187 Load/download plugins
+
+[[1;34mINFO[m] 15:12:33.374 Load/download plugins (done) | time=3187ms
+
+[[1;34mINFO[m] 15:12:34.367 Process project properties
+[[1;34mINFO[m] 15:12:34.407 Process project properties (done) | time=40ms
+[[1;34mINFO[m] 15:12:34.443 Project key: ecommerce-project
+[[1;34mINFO[m] 15:12:34.444 Base dir: /var/lib/jenkins/workspace/ecommerce-project-pipeline
+[[1;34mINFO[m] 15:12:34.444 Working dir: /var/lib/jenkins/workspace/ecommerce-project-pipeline/target/sonar
+[[1;34mINFO[m] 15:12:34.484 Load project settings for component key: 'ecommerce-project'
+[[1;34mINFO[m] 15:12:34.563 Load project settings for component key: 'ecommerce-project' (done) | time=79ms
+[[1;34mINFO[m] 15:12:34.637 Load quality profiles
+[[1;34mINFO[m] 15:12:35.133 Load quality profiles (done) | time=496ms
+[[1;34mINFO[m] 15:12:35.162 Auto-configuring with CI 'Jenkins'
+[[1;34mINFO[m] 15:12:35.208 Load active rules
+
+[[1;34mINFO[m] 15:13:01.074 Load active rules (done) | time=25866ms
+[[1;34mINFO[m] 15:13:01.082 Load analysis cache
+[[1;34mINFO[m] 15:13:01.100 Load analysis cache (404) | time=18ms
+[[1;33mWARNING[m] 15:13:01.194 The property 'sonar.login' is deprecated and will be removed in the future. Please use the 'sonar.token' property instead when passing a token.
+[[1;34mINFO[m] 15:13:01.236 Preprocessing files...
+[[1;34mINFO[m] 15:13:01.484 1 language detected in 1 preprocessed file
+[[1;34mINFO[m] 15:13:01.492 0 files ignored because of scm ignore settings
+[[1;34mINFO[m] 15:13:01.497 Loading plugins for detected languages
+[[1;34mINFO[m] 15:13:01.499 Load/download plugins
+[[1;34mINFO[m] 15:13:01.499 Load/download plugins (done) | time=1ms
+[[1;34mINFO[m] 15:13:01.592 Load project repositories
+[[1;34mINFO[m] 15:13:01.656 Load project repositories (done) | time=64ms
+[[1;34mINFO[m] 15:13:01.696 Indexing files...
+[[1;34mINFO[m] 15:13:01.698 Project configuration:
+[[1;34mINFO[m] 15:13:01.727 1 file indexed
+[[1;34mINFO[m] 15:13:01.738 Quality profile for xml: Sonar way
+[[1;34mINFO[m] 15:13:01.739 ------------- Run sensors on module ecommerce-project
+[[1;34mINFO[m] 15:13:01.851 Load metrics repository
+[[1;34mINFO[m] 15:13:01.905 Load metrics repository (done) | time=54ms
+
+[[1;34mINFO[m] 15:13:03.382 Sensor XML Sensor [xml]
+[[1;34mINFO[m] 15:13:03.451 1 source file to be analyzed
+
+[[1;34mINFO[m] 15:13:03.907 1/1 source file has been analyzed
+[[1;34mINFO[m] 15:13:03.908 Sensor XML Sensor [xml] (done) | time=526ms
+[[1;34mINFO[m] 15:13:03.909 Sensor JaCoCo XML Report Importer [jacoco]
+[[1;34mINFO[m] 15:13:03.918 'sonar.coverage.jacoco.xmlReportPaths' is not defined. Using default locations: target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml,build/reports/jacoco/test/jacocoTestReport.xml
+[[1;34mINFO[m] 15:13:03.920 No report imported, no coverage information will be imported by JaCoCo XML Report Importer
+[[1;34mINFO[m] 15:13:03.921 Sensor JaCoCo XML Report Importer [jacoco] (done) | time=12ms
+[[1;34mINFO[m] 15:13:03.922 Sensor Java Config Sensor [iac]
+[[1;34mINFO[m] 15:13:03.987 0 source files to be analyzed
+[[1;34mINFO[m] 15:13:04.043 0/0 source files have been analyzed
+[[1;34mINFO[m] 15:13:04.045 Sensor Java Config Sensor [iac] (done) | time=123ms
+[[1;34mINFO[m] 15:13:04.046 Sensor IaC Docker Sensor [iac]
+[[1;34mINFO[m] 15:13:04.070 0 source files to be analyzed
+[[1;34mINFO[m] 15:13:04.243 0/0 source files have been analyzed
+[[1;34mINFO[m] 15:13:04.244 Sensor IaC Docker Sensor [iac] (done) | time=198ms
+[[1;34mINFO[m] 15:13:04.246 Sensor TextAndSecretsSensor [text]
+[[1;34mINFO[m] 15:13:04.247 Available processors: 4
+[[1;34mINFO[m] 15:13:04.247 Using 4 threads for analysis.
+
+[[1;34mINFO[m] 15:13:06.353 The property "sonar.tests" is not set. To improve the analysis accuracy, we categorize a file as a test file if any of the following is true:
+  * The filename starts with "test"
+  * The filename contains "test." or "tests."
+  * Any directory in the file path is named: "doc", "docs", "test" or "tests"
+  * Any directory in the file path has a name ending in "test" or "tests"
+
+[[1;34mINFO[m] 15:13:06.411 Using git CLI to retrieve untracked files
+[[1;34mINFO[m] 15:13:06.433 Analyzing language associated files and files included via "sonar.text.inclusions" that are tracked by git
+[[1;34mINFO[m] 15:13:06.464 1 source file to be analyzed
+[[1;34mINFO[m] 15:13:06.542 1/1 source file has been analyzed
+[[1;34mINFO[m] 15:13:06.548 Sensor TextAndSecretsSensor [text] (done) | time=2302ms
+[[1;34mINFO[m] 15:13:06.568 ------------- Run sensors on project
+[[1;34mINFO[m] 15:13:06.678 Sensor Zero Coverage Sensor
+[[1;34mINFO[m] 15:13:06.679 Sensor Zero Coverage Sensor (done) | time=1ms
+[[1;34mINFO[m] 15:13:06.684 SCM Publisher SCM provider for this project is: git
+[[1;34mINFO[m] 15:13:06.688 SCM Publisher 1 source file to be analyzed
+[[1;34mINFO[m] 15:13:06.862 SCM Publisher 1/1 source file have been analyzed (done) | time=161ms
+[[1;34mINFO[m] 15:13:06.876 CPD Executor Calculating CPD for 0 files
+[[1;34mINFO[m] 15:13:06.878 CPD Executor CPD calculation finished (done) | time=0ms
+[[1;34mINFO[m] 15:13:06.900 SCM revision ID 'a42f6ed3d375a4d1293507820a1b8596f6aa830c'
+[[1;34mINFO[m] 15:13:07.256 Analysis report generated in 342ms, dir size=198.9 kB
+[[1;34mINFO[m] 15:13:07.330 Analysis report compressed in 71ms, zip size=20.3 kB
+[[1;34mINFO[m] 15:13:07.491 Analysis report uploaded in 153ms
+[[1;34mINFO[m] 15:13:07.498 ANALYSIS SUCCESSFUL, you can find the results at: http://localhost:9000/dashboard?id=ecommerce-project
+[[1;34mINFO[m] 15:13:07.499 Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+[[1;34mINFO[m] 15:13:07.500 More about the report processing at http://localhost:9000/api/ce/task?id=cdc9ea23-cef2-44d0-b8b6-ff02f49494ae
+[[1;34mINFO[m] 15:13:07.531 Analysis total time: 34.006 s
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  47.020 s
+[[1;34mINFO[m] Finished at: 2024-08-16T15:13:07+03:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[Pipeline] }
+[Pipeline] // withCredentials
+
+[Pipeline] }
+[Pipeline] // withSonarQubeEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Quality Gate)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 1 saat 0 dakika
+[Pipeline] {
+[Pipeline] waitForQualityGate
+Checking status of SonarQube task 'cdc9ea23-cef2-44d0-b8b6-ff02f49494ae' on server 'SonarQube'
+
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Also:   org.jenkinsci.plugins.workflow.actions.ErrorAction$ErrorId: 40153557-76b8-444b-a6eb-4d4a17b1853d
+org.sonarqube.ws.client.HttpException: Error 401 on http://localhost:9000/api/ce/task?id=cdc9ea23-cef2-44d0-b8b6-ff02f49494ae : 
+	at PluginClassLoader for sonar//hudson.plugins.sonar.client.HttpClient.getHttp(HttpClient.java:48)
+	at PluginClassLoader for sonar//hudson.plugins.sonar.client.WsClient.getCETask(WsClient.java:52)
+	at PluginClassLoader for sonar//org.sonarsource.scanner.jenkins.pipeline.WaitForQualityGateStep$Execution.checkTaskCompleted(WaitForQualityGateStep.java:244)
+	at PluginClassLoader for sonar//org.sonarsource.scanner.jenkins.pipeline.WaitForQualityGateStep$Execution.start(WaitForQualityGateStep.java:179)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.DSL.invokeStep(DSL.java:323)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.DSL.invokeMethod(DSL.java:196)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsScript.invokeMethod(CpsScript.java:124)
+	at jdk.internal.reflect.GeneratedMethodAccessor293.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:98)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1225)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1034)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:41)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:116)
+	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker$1.call(Checker.java:180)
+	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.GroovyInterceptor.onMethodCall(GroovyInterceptor.java:23)
+	at PluginClassLoader for script-security//org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SandboxInterceptor.onMethodCall(SandboxInterceptor.java:163)
+	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker$1.call(Checker.java:178)
+	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedCall(Checker.java:182)
+	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedCall(Checker.java:152)
+	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedCall(Checker.java:152)
+	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedCall(Checker.java:152)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.sandbox.SandboxInvoker.methodCall(SandboxInvoker.java:17)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.LoggingInvoker.methodCall(LoggingInvoker.java:105)
+	at WorkflowScript.run(WorkflowScript:42)
+	at ___cps.transform___(Native Method)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.ContinuationGroup.methodCall(ContinuationGroup.java:90)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.FunctionCallBlock$ContinuationImpl.dispatchOrArg(FunctionCallBlock.java:116)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.FunctionCallBlock$ContinuationImpl.fixArg(FunctionCallBlock.java:85)
+	at jdk.internal.reflect.GeneratedMethodAccessor188.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.ContinuationPtr$ContinuationImpl.receive(ContinuationPtr.java:72)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.CollectionLiteralBlock$ContinuationImpl.dispatch(CollectionLiteralBlock.java:55)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.CollectionLiteralBlock$ContinuationImpl.item(CollectionLiteralBlock.java:45)
+	at jdk.internal.reflect.GeneratedMethodAccessor193.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.ContinuationPtr$ContinuationImpl.receive(ContinuationPtr.java:72)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.ConstantBlock.eval(ConstantBlock.java:21)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.Next.step(Next.java:83)
+	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.Continuable.run0(Continuable.java:147)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.SandboxContinuable.access$001(SandboxContinuable.java:17)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.SandboxContinuable.run0(SandboxContinuable.java:49)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThread.runNextChunk(CpsThread.java:180)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThreadGroup.run(CpsThreadGroup.java:423)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThreadGroup$2.call(CpsThreadGroup.java:331)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThreadGroup$2.call(CpsThreadGroup.java:295)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService.lambda$wrap$4(CpsVmExecutorService.java:140)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at hudson.remoting.SingleLaneExecutorService$1.run(SingleLaneExecutorService.java:139)
+	at jenkins.util.ContextResettingExecutorService$1.run(ContextResettingExecutorService.java:28)
+	at jenkins.security.ImpersonatingExecutorService$1.run(ImpersonatingExecutorService.java:68)
+	at jenkins.util.ErrorLoggingExecutorService.lambda$wrap$0(ErrorLoggingExecutorService.java:51)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService$1.call(CpsVmExecutorService.java:53)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService$1.call(CpsVmExecutorService.java:50)
+	at org.codehaus.groovy.runtime.GroovyCategorySupport$ThreadCategoryInfo.use(GroovyCategorySupport.java:136)
+	at org.codehaus.groovy.runtime.GroovyCategorySupport.use(GroovyCategorySupport.java:275)
+	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService.lambda$categoryThreadFactory$0(CpsVmExecutorService.java:50)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Finished: FAILURE
 
