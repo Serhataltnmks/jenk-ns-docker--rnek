@@ -1,15 +1,17 @@
-# Base image olarak Python kullanıyoruz
-FROM python:3.8-slim
+version: '3.8'
 
-# Çalışma dizinini oluştur ve belirle
-WORKDIR /app
+services:
+  product-service:
+    build: ./product-service
+    ports:
+      - "5001:5001"
 
-# Gereken dosyaları kopyala
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+  order-service:
+    build: ./order-service
+    ports:
+      - "5002:5002"
 
-# Uygulama kodunu kopyala
-COPY . .
-
-# Uygulamayı çalıştır
-CMD ["python3", "app.py"]
+  user-service:
+    build: ./user-service
+    ports:
+      - "5003:5003"
