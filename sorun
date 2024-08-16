@@ -1,46 +1,98 @@
-pipeline {
-    agent any
+Started by user serhat a
 
-    environment {
-        SONARQUBE_URL = 'http://<sonarqube_url>'  // SonarQube sunucusunun URL'si
-        SONARQUBE_KEY = 'ecommerce-project'      // SonarQube projesinin anahtarı
-    }
+Obtained Jenkinsfile from git https://gitlab.com/serhataltnmks/ecommerce-project
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/lib/jenkins/workspace/ecommerce-project-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://gitlab.com/serhataltnmks/ecommerce-project
+ > git init /var/lib/jenkins/workspace/ecommerce-project-pipeline # timeout=10
+Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 9bd248fde6152745e0143d4684cead05173e262b (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
+Commit message: "Added Jenkins piplane with SonarQube integration"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Repository)
+[Pipeline] git
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project.git # timeout=10
+Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 9bd248fde6152745e0143d4684cead05173e262b (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git checkout -b master 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
+Commit message: "Added Jenkins piplane with SonarQube integration"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker Images)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ docker-compose build
+Couldn't connect to Docker daemon at http+docker://localhost - is it running?
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://gitlab.com/your-username/ecommerce-project.git'
-            }
-        }
-        stage('Build Docker Images') {
-            steps {
-                script {
-                    sh 'docker-compose build'
-                }
-            }
-        }
-        stage('Run Docker Containers') {
-            steps {
-                script {
-                    sh 'docker-compose up -d'
-                }
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONAR_TOKEN}"
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        waitForQualityGate abortPipeline: true
-                    }
-                }
-            }
-        }
-    }
-}
+If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Docker Containers)
+Stage "Run Docker Containers" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SonarQube Analysis)
+Stage "SonarQube Analysis" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Quality Gate)
+Stage "Quality Gate" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
