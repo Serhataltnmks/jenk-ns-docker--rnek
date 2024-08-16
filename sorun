@@ -12,22 +12,19 @@ Running on Jenkins
 Selected Git installation does not exist. Using Default
 The recommended git tool is: NONE
 No credentials specified
-Cloning the remote Git repository
-Cloning repository https://gitlab.com/serhataltnmks/ecommerce-project
- > git init /var/lib/jenkins/workspace/ecommerce-project-pipeline # timeout=10
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project # timeout=10
 Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project
  > git --version # timeout=10
  > git --version # 'git version 2.25.1'
  > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project # timeout=10
- > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
-Avoid second fetch
  > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
 Checking out Revision 9bd248fde6152745e0143d4684cead05173e262b (refs/remotes/origin/master)
  > git config core.sparsecheckout # timeout=10
  > git checkout -f 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
 Commit message: "Added Jenkins piplane with SonarQube integration"
-First time build. Skipping changelog.
+ > git rev-list --no-walk 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] withEnv
@@ -52,6 +49,7 @@ Checking out Revision 9bd248fde6152745e0143d4684cead05173e262b (refs/remotes/ori
  > git config core.sparsecheckout # timeout=10
  > git checkout -f 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
  > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
  > git checkout -b master 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
 Commit message: "Added Jenkins piplane with SonarQube integration"
 [Pipeline] }
@@ -62,18 +60,211 @@ Commit message: "Added Jenkins piplane with SonarQube integration"
 [Pipeline] {
 [Pipeline] sh
 + docker-compose build
-Couldn't connect to Docker daemon at http+docker://localhost - is it running?
+Building product-service
+Step 1/6 : FROM python:3.8-slim
+ ---> e7fd04b8ffc7
+Step 2/6 : WORKDIR /app
+ ---> Using cache
+ ---> a06b6bd6e0c0
+Step 3/6 : COPY requirements.txt requirements.txt
+ ---> 94d9a1f3c5ee
+Step 4/6 : RUN pip install -r requirements.txt
+ ---> Running in ad3d88795bd0
+Collecting flask
+  Downloading flask-3.0.3-py3-none-any.whl (101 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 101.7/101.7 kB 993.7 kB/s eta 0:00:00
+Collecting flask_sqlalchemy
+  Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
+Collecting flask_marshmallow
+  Downloading flask_marshmallow-1.2.1-py3-none-any.whl (12 kB)
+Collecting marshmallow-sqlalchemy
+  Downloading marshmallow_sqlalchemy-1.1.0-py3-none-any.whl (14 kB)
+Collecting Jinja2>=3.1.2
+  Downloading jinja2-3.1.4-py3-none-any.whl (133 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 133.3/133.3 kB 2.8 MB/s eta 0:00:00
+Collecting itsdangerous>=2.1.2
+  Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Collecting Werkzeug>=3.0.0
+  Downloading werkzeug-3.0.3-py3-none-any.whl (227 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 227.3/227.3 kB 1.7 MB/s eta 0:00:00
+Collecting click>=8.1.3
+  Downloading click-8.1.7-py3-none-any.whl (97 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 97.9/97.9 kB 4.4 MB/s eta 0:00:00
+Collecting blinker>=1.6.2
+  Downloading blinker-1.8.2-py3-none-any.whl (9.5 kB)
+Collecting importlib-metadata>=3.6.0
+  Downloading importlib_metadata-8.2.0-py3-none-any.whl (25 kB)
+Collecting sqlalchemy>=2.0.16
+  Downloading SQLAlchemy-2.0.32-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 4.8 MB/s eta 0:00:00
+Collecting marshmallow>=3.0.0
+  Downloading marshmallow-3.21.3-py3-none-any.whl (49 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.2/49.2 kB 1.9 MB/s eta 0:00:00
+Collecting zipp>=0.5
+  Downloading zipp-3.20.0-py3-none-any.whl (9.4 kB)
+Collecting MarkupSafe>=2.0
+  Downloading MarkupSafe-2.1.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (26 kB)
+Collecting packaging>=17.0
+  Downloading packaging-24.1-py3-none-any.whl (53 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.0/54.0 kB 2.7 MB/s eta 0:00:00
+Collecting typing-extensions>=4.6.0
+  Downloading typing_extensions-4.12.2-py3-none-any.whl (37 kB)
+Collecting greenlet!=0.4.17
+  Downloading greenlet-3.0.3-cp38-cp38-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (622 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 622.3/622.3 kB 4.6 MB/s eta 0:00:00
+Installing collected packages: zipp, typing-extensions, packaging, MarkupSafe, itsdangerous, greenlet, click, blinker, Werkzeug, sqlalchemy, marshmallow, Jinja2, importlib-metadata, marshmallow-sqlalchemy, flask, flask_sqlalchemy, flask_marshmallow
+Successfully installed Jinja2-3.1.4 MarkupSafe-2.1.5 Werkzeug-3.0.3 blinker-1.8.2 click-8.1.7 flask-3.0.3 flask_marshmallow-1.2.1 flask_sqlalchemy-3.1.1 greenlet-3.0.3 importlib-metadata-8.2.0 itsdangerous-2.2.0 marshmallow-3.21.3 marshmallow-sqlalchemy-1.1.0 packaging-24.1 sqlalchemy-2.0.32 typing-extensions-4.12.2 zipp-3.20.0
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+[0m[91m
+[notice] A new release of pip is available: 23.0.1 -> 24.2
+[notice] To update, run: pip install --upgrade pip
+[0mRemoving intermediate container ad3d88795bd0
+ ---> 94b50f6a7689
+Step 5/6 : COPY . .
+ ---> 30a75a3835af
+Step 6/6 : CMD ["python3", "app.py"]
+ ---> Running in 2b378f38153a
+Removing intermediate container 2b378f38153a
+ ---> 33a3610e5f4c
 
-If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+Successfully built 33a3610e5f4c
+Successfully tagged ecommerce-project-pipeline_product-service:latest
+Building order-service
+Step 1/6 : FROM python:3.8-slim
+ ---> e7fd04b8ffc7
+Step 2/6 : WORKDIR /app
+ ---> Using cache
+ ---> a06b6bd6e0c0
+Step 3/6 : COPY requirements.txt requirements.txt
+ ---> da75cbed77c4
+Step 4/6 : RUN pip install -r requirements.txt
+ ---> Running in 4e612481ce64
+
+Collecting flask
+  Downloading flask-3.0.3-py3-none-any.whl (101 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 101.7/101.7 kB 710.9 kB/s eta 0:00:00
+Collecting flask_sqlalchemy
+  Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
+Collecting flask_marshmallow
+  Downloading flask_marshmallow-1.2.1-py3-none-any.whl (12 kB)
+Collecting marshmallow-sqlalchemy
+  Downloading marshmallow_sqlalchemy-1.1.0-py3-none-any.whl (14 kB)
+
+Collecting importlib-metadata>=3.6.0
+  Downloading importlib_metadata-8.2.0-py3-none-any.whl (25 kB)
+Collecting itsdangerous>=2.1.2
+  Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Collecting blinker>=1.6.2
+  Downloading blinker-1.8.2-py3-none-any.whl (9.5 kB)
+Collecting click>=8.1.3
+  Downloading click-8.1.7-py3-none-any.whl (97 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 97.9/97.9 kB 4.4 MB/s eta 0:00:00
+Collecting Werkzeug>=3.0.0
+
+  Downloading werkzeug-3.0.3-py3-none-any.whl (227 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 227.3/227.3 kB 3.3 MB/s eta 0:00:00
+Collecting Jinja2>=3.1.2
+  Downloading jinja2-3.1.4-py3-none-any.whl (133 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 133.3/133.3 kB 4.0 MB/s eta 0:00:00
+
+Collecting sqlalchemy>=2.0.16
+  Downloading SQLAlchemy-2.0.32-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.1 MB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 3.6 MB/s eta 0:00:00
+Collecting marshmallow>=3.0.0
+  Downloading marshmallow-3.21.3-py3-none-any.whl (49 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.2/49.2 kB 1.2 MB/s eta 0:00:00
+Collecting zipp>=0.5
+  Downloading zipp-3.20.0-py3-none-any.whl (9.4 kB)
+
+Collecting MarkupSafe>=2.0
+  Downloading MarkupSafe-2.1.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (26 kB)
+Collecting packaging>=17.0
+  Downloading packaging-24.1-py3-none-any.whl (53 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.0/54.0 kB 2.6 MB/s eta 0:00:00
+
+Collecting greenlet!=0.4.17
+  Downloading greenlet-3.0.3-cp38-cp38-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (622 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 622.3/622.3 kB 3.7 MB/s eta 0:00:00
+
+Collecting typing-extensions>=4.6.0
+  Downloading typing_extensions-4.12.2-py3-none-any.whl (37 kB)
+Installing collected packages: zipp, typing-extensions, packaging, MarkupSafe, itsdangerous, greenlet, click, blinker, Werkzeug, sqlalchemy, marshmallow, Jinja2, importlib-metadata, marshmallow-sqlalchemy, flask, flask_sqlalchemy, flask_marshmallow
+
+Successfully installed Jinja2-3.1.4 MarkupSafe-2.1.5 Werkzeug-3.0.3 blinker-1.8.2 click-8.1.7 flask-3.0.3 flask_marshmallow-1.2.1 flask_sqlalchemy-3.1.1 greenlet-3.0.3 importlib-metadata-8.2.0 itsdangerous-2.2.0 marshmallow-3.21.3 marshmallow-sqlalchemy-1.1.0 packaging-24.1 sqlalchemy-2.0.32 typing-extensions-4.12.2 zipp-3.20.0
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+[0m[91m
+[notice] A new release of pip is available: 23.0.1 -> 24.2
+[notice] To update, run: pip install --upgrade pip
+
+[0mRemoving intermediate container 4e612481ce64
+ ---> 533e8754d9a3
+Step 5/6 : COPY . .
+ ---> 35dc5dea9977
+Step 6/6 : CMD ["python3", "app.py"]
+ ---> Running in 9f2190e7f127
+
+Removing intermediate container 9f2190e7f127
+ ---> 8c1cb02e898e
+
+Successfully built 8c1cb02e898e
+Successfully tagged ecommerce-project-pipeline_order-service:latest
+Building user-service
+Step 1/6 : FROM python:3.8-slim
+ ---> e7fd04b8ffc7
+Step 2/6 : WORKDIR /app
+ ---> Using cache
+ ---> a06b6bd6e0c0
+Step 3/6 : COPY requirements.txt requirements.txt
+ ---> Using cache
+ ---> 94d9a1f3c5ee
+Step 4/6 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 94b50f6a7689
+Step 5/6 : COPY . .
+ ---> 14641a0c86a2
+Step 6/6 : CMD ["python3", "app.py"]
+
+ ---> Running in 29eb87367742
+Removing intermediate container 29eb87367742
+ ---> 4bd6bb67659c
+
+Successfully built 4bd6bb67659c
+Successfully tagged ecommerce-project-pipeline_user-service:latest
 [Pipeline] }
+
 [Pipeline] // script
 [Pipeline] }
 [Pipeline] // stage
 [Pipeline] stage
 [Pipeline] { (Run Docker Containers)
-Stage "Run Docker Containers" skipped due to earlier failure(s)
-[Pipeline] getContext
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+
++ docker-compose up -d
+Creating network "ecommerce-project-pipeline_default" with the default driver
+
+Creating ecommerce-project-pipeline_product-service_1 ... 
+Creating ecommerce-project-pipeline_user-service_1    ... 
+Creating ecommerce-project-pipeline_order-service_1   ... 
+
+Host is already in use by another container
+[3A[2K
+
+[3B
+ERROR: for ecommerce-project-pipeline_product-service_1  Cannot start service product-service: driver failed programming external connectivity on endpoint ecommerce-project-pipeline_product-service_1 (82c4d562f71c40a2e4cda4454fd5ad008571a0ee6e4547b57ac1d4f6f55a8778): Bind for 0.0.0.0:5001 failed: port is already allocated
+[2A[2K
+Creating ecommerce-project-pipeline_user-service_1    ... [32mdone[0m
+[2B[1A[2K
+Creating ecommerce-project-pipeline_order-service_1   ... [32mdone[0m
+[1B
+ERROR: for product-service  Cannot start service product-service: driver failed programming external connectivity on endpoint ecommerce-project-pipeline_product-service_1 (82c4d562f71c40a2e4cda4454fd5ad008571a0ee6e4547b57ac1d4f6f55a8778): Bind for 0.0.0.0:5001 failed: port is already allocated
+Encountered errors while bringing up the project.
 [Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+
 [Pipeline] // stage
 [Pipeline] stage
 [Pipeline] { (SonarQube Analysis)
@@ -81,6 +272,7 @@ Stage "SonarQube Analysis" skipped due to earlier failure(s)
 [Pipeline] getContext
 [Pipeline] }
 [Pipeline] // stage
+
 [Pipeline] stage
 [Pipeline] { (Quality Gate)
 Stage "Quality Gate" skipped due to earlier failure(s)
@@ -92,6 +284,7 @@ Stage "Quality Gate" skipped due to earlier failure(s)
 [Pipeline] }
 [Pipeline] // withEnv
 [Pipeline] }
+
 [Pipeline] // node
 [Pipeline] End of Pipeline
 ERROR: script returned exit code 1
