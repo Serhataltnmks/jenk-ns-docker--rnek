@@ -1,232 +1,48 @@
-Started by user serhat a
+pipeline {
+    agent any
 
-Obtained Jenkinsfile from git https://gitlab.com/serhataltnmks/ecommerce-project
-[Pipeline] Start of Pipeline
+    environment {
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONARQUBE_KEY = 'ecommerce-project'
+    }
 
-[Pipeline] node
-Running on Jenkins
- in /var/lib/jenkins/workspace/ecommerce-project-pipeline
-[Pipeline] {
-
-[Pipeline] stage
-[Pipeline] { (Declarative: Checkout SCM)
-[Pipeline] checkout
-Selected Git installation does not exist. Using Default
-The recommended git tool is: NONE
-No credentials specified
- > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
-Fetching changes from the remote Git repository
- > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project # timeout=10
-Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project
- > git --version # timeout=10
- > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project +refs/heads/*:refs/remotes/origin/* # timeout=10
-
- > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
-Checking out Revision 9bd248fde6152745e0143d4684cead05173e262b (refs/remotes/origin/master)
- > git config core.sparsecheckout # timeout=10
- > git checkout -f 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
-Commit message: "Added Jenkins piplane with SonarQube integration"
- > git rev-list --no-walk 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
-[Pipeline] }
-[Pipeline] // stage
-
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] withEnv
-[Pipeline] {
-[Pipeline] stage
-[Pipeline] { (Clone Repository)
-[Pipeline] git
-Selected Git installation does not exist. Using Default
-The recommended git tool is: NONE
-No credentials specified
- > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ecommerce-project-pipeline/.git # timeout=10
-Fetching changes from the remote Git repository
- > git config remote.origin.url https://gitlab.com/serhataltnmks/ecommerce-project.git # timeout=10
-Fetching upstream changes from https://gitlab.com/serhataltnmks/ecommerce-project.git
- > git --version # timeout=10
- > git --version # 'git version 2.25.1'
- > git fetch --tags --force --progress -- https://gitlab.com/serhataltnmks/ecommerce-project.git +refs/heads/*:refs/remotes/origin/* # timeout=10
-
- > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
-Checking out Revision 9bd248fde6152745e0143d4684cead05173e262b (refs/remotes/origin/master)
- > git config core.sparsecheckout # timeout=10
- > git checkout -f 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
- > git branch -a -v --no-abbrev # timeout=10
- > git branch -D master # timeout=10
- > git checkout -b master 9bd248fde6152745e0143d4684cead05173e262b # timeout=10
-Commit message: "Added Jenkins piplane with SonarQube integration"
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Build Docker Images)
-
-[Pipeline] script
-[Pipeline] {
-[Pipeline] sh
-+ docker-compose build
-
-Building product-service
-Step 1/6 : FROM python:3.8-slim
- ---> e7fd04b8ffc7
-Step 2/6 : WORKDIR /app
- ---> Using cache
- ---> a06b6bd6e0c0
-Step 3/6 : COPY requirements.txt requirements.txt
- ---> Using cache
- ---> 94d9a1f3c5ee
-Step 4/6 : RUN pip install -r requirements.txt
- ---> Using cache
- ---> 94b50f6a7689
-Step 5/6 : COPY . .
- ---> Using cache
- ---> 30a75a3835af
-Step 6/6 : CMD ["python3", "app.py"]
- ---> Using cache
- ---> 33a3610e5f4c
-
-Successfully built 33a3610e5f4c
-Successfully tagged ecommerce-project-pipeline_product-service:latest
-Building order-service
-Step 1/6 : FROM python:3.8-slim
- ---> e7fd04b8ffc7
-Step 2/6 : WORKDIR /app
- ---> Using cache
- ---> a06b6bd6e0c0
-Step 3/6 : COPY requirements.txt requirements.txt
- ---> Using cache
- ---> da75cbed77c4
-Step 4/6 : RUN pip install -r requirements.txt
- ---> Using cache
- ---> 533e8754d9a3
-Step 5/6 : COPY . .
- ---> Using cache
- ---> 35dc5dea9977
-Step 6/6 : CMD ["python3", "app.py"]
- ---> Using cache
- ---> 8c1cb02e898e
-
-Successfully built 8c1cb02e898e
-Successfully tagged ecommerce-project-pipeline_order-service:latest
-Building user-service
-Step 1/6 : FROM python:3.8-slim
- ---> e7fd04b8ffc7
-Step 2/6 : WORKDIR /app
- ---> Using cache
- ---> a06b6bd6e0c0
-Step 3/6 : COPY requirements.txt requirements.txt
- ---> Using cache
- ---> 94d9a1f3c5ee
-Step 4/6 : RUN pip install -r requirements.txt
- ---> Using cache
- ---> 94b50f6a7689
-Step 5/6 : COPY . .
- ---> Using cache
- ---> 14641a0c86a2
-Step 6/6 : CMD ["python3", "app.py"]
- ---> Using cache
- ---> 4bd6bb67659c
-
-Successfully built 4bd6bb67659c
-Successfully tagged ecommerce-project-pipeline_user-service:latest
-[Pipeline] }
-[Pipeline] // script
-
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Run Docker Containers)
-[Pipeline] script
-[Pipeline] {
-[Pipeline] sh
-+ docker-compose up -d
-
-Starting ecommerce-project-pipeline_product-service_1 ... 
-Starting ecommerce-project-pipeline_user-service_1    ... 
-Starting ecommerce-project-pipeline_order-service_1   ... 
-
-[3A[2K
-Starting ecommerce-project-pipeline_product-service_1 ... [32mdone[0m
-[3B[2A[2K
-Starting ecommerce-project-pipeline_user-service_1    ... [32mdone[0m
-[2B[1A[2K
-Starting ecommerce-project-pipeline_order-service_1   ... [32mdone[0m
-[1B
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (SonarQube Analysis)
-[Pipeline] withSonarQubeEnv
-
-Injecting SonarQube environment variables using the configuration: SonarQube
-[Pipeline] {
-[Pipeline] }
-WARN: Unable to locate 'report-task.txt' in the workspace. Did the SonarScanner succeed?
-[Pipeline] // withSonarQubeEnv
-[Pipeline] }
-[Pipeline] // stage
-
-[Pipeline] stage
-[Pipeline] { (Quality Gate)
-Stage "Quality Gate" skipped due to earlier failure(s)
-[Pipeline] getContext
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-Also:   org.jenkinsci.plugins.workflow.actions.ErrorAction$ErrorId: c31121e2-8a10-4f20-af2f-8560f481f63d
-groovy.lang.MissingPropertyException: No such property: SONAR_TOKEN for class: groovy.lang.Binding
-	at groovy.lang.Binding.getVariable(Binding.java:63)
-	at PluginClassLoader for script-security//org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SandboxInterceptor.onGetProperty(SandboxInterceptor.java:285)
-	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker$7.call(Checker.java:375)
-	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedGetProperty(Checker.java:379)
-	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedGetProperty(Checker.java:355)
-	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedGetProperty(Checker.java:355)
-	at PluginClassLoader for script-security//org.kohsuke.groovy.sandbox.impl.Checker.checkedGetProperty(Checker.java:355)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.sandbox.SandboxInvoker.getProperty(SandboxInvoker.java:29)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.LoggingInvoker.getProperty(LoggingInvoker.java:121)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.PropertyAccessBlock.rawGet(PropertyAccessBlock.java:20)
-	at WorkflowScript.run(WorkflowScript:32)
-	at ___cps.transform___(Native Method)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.PropertyishBlock$ContinuationImpl.get(PropertyishBlock.java:73)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.LValueBlock$GetAdapter.receive(LValueBlock.java:30)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.PropertyishBlock$ContinuationImpl.fixName(PropertyishBlock.java:65)
-	at jdk.internal.reflect.GeneratedMethodAccessor192.invoke(Unknown Source)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.ContinuationPtr$ContinuationImpl.receive(ContinuationPtr.java:72)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.impl.ConstantBlock.eval(ConstantBlock.java:21)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.Next.step(Next.java:83)
-	at PluginClassLoader for workflow-cps//com.cloudbees.groovy.cps.Continuable.run0(Continuable.java:147)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.SandboxContinuable.access$001(SandboxContinuable.java:17)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.SandboxContinuable.run0(SandboxContinuable.java:49)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThread.runNextChunk(CpsThread.java:180)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThreadGroup.run(CpsThreadGroup.java:423)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThreadGroup$2.call(CpsThreadGroup.java:331)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsThreadGroup$2.call(CpsThreadGroup.java:295)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService.lambda$wrap$4(CpsVmExecutorService.java:140)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
-	at hudson.remoting.SingleLaneExecutorService$1.run(SingleLaneExecutorService.java:139)
-	at jenkins.util.ContextResettingExecutorService$1.run(ContextResettingExecutorService.java:28)
-	at jenkins.security.ImpersonatingExecutorService$1.run(ImpersonatingExecutorService.java:68)
-	at jenkins.util.ErrorLoggingExecutorService.lambda$wrap$0(ErrorLoggingExecutorService.java:51)
-	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService$1.call(CpsVmExecutorService.java:53)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService$1.call(CpsVmExecutorService.java:50)
-	at org.codehaus.groovy.runtime.GroovyCategorySupport$ThreadCategoryInfo.use(GroovyCategorySupport.java:136)
-	at org.codehaus.groovy.runtime.GroovyCategorySupport.use(GroovyCategorySupport.java:275)
-	at PluginClassLoader for workflow-cps//org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService.lambda$categoryThreadFactory$0(CpsVmExecutorService.java:50)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Finished: FAILURE
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://gitlab.com/your-username/ecommerce-project.git'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        stage('Run Docker Containers') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+            }
+        }
+    }
+}
