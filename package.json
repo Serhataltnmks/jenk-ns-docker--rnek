@@ -1,8 +1,32 @@
-{
-	"name": "jenkins-docker-example",
-	"version": "1.0.0",
-	"main": "app.js",
-	"dependencies": {
-	  "http": "^0.0.1-security"
-  }
-}
+image: maven:3.8.4-jdk-11
+
+stages:
+  - build
+  - test
+  - sonar
+
+variables:
+  SONAR_SCANNER_OPTS: "-Xmx1024m"
+
+cache:
+  paths:
+    - .m2/repository
+
+before_script:
+  - export SONAR_TOKEN=${SONAR_TOKEN}
+  - export MAVEN_CLI_OPTS="-s settings.xml"
+
+build:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean compile
+
+test:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+
+sonar:
+  stage: sonar
+  script:
+    - mvn $MAVEN_CLI_OPTS sonar:sonar -Dsonar.projectKey=ecommerce-project -Dsonar.host.url=http://<sonarqube_url> -Dsonar.login=$SONAR_TOKEN
