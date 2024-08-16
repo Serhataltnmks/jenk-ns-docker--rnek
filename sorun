@@ -1,32 +1,46 @@
-image: maven:3.8.4-jdk-17
+pipeline {
+    agent any
 
-stages:
-  - build
-  - test
-  - sonar
+    environment {
+        SONARQUBE_URL = 'http://<sonarqube_url>'  // SonarQube sunucusunun URL'si
+        SONARQUBE_KEY = 'ecommerce-project'      // SonarQube projesinin anahtarı
+    }
 
-variables:
-  SONAR_SCANNER_OPTS: "-Xmx1024m"
-
-cache:
-  paths:
-    - .m2/repository
-
-before_script:
-  - export SONAR_TOKEN=${SONAR_TOKEN}
-  - export MAVEN_CLI_OPTS="-s settings.xml"
-
-build:
-  stage: build
-  script:
-    - mvn $MAVEN_CLI_OPTS clean compile
-
-test:
-  stage: test
-  script:
-    - mvn $MAVEN_CLI_OPTS test
-
-sonar:
-  stage: sonar
-  script:
-    - mvn $MAVEN_CLI_OPTS sonar:sonar -Dsonar.projectKey=ecommerce-project -Dsonar.host.url=http://<sonarqube_url> -Dsonar.login=$SONAR_TOKEN
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://gitlab.com/your-username/ecommerce-project.git'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        stage('Run Docker Containers') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "mvn sonar:sonar -Dsonar.projectKey=${SONARQUBE_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONAR_TOKEN}"
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+            }
+        }
+    }
+}
