@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,26 +17,25 @@
             height: 400px;
             margin: 20px auto;
             border: 2px solid black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         .cell {
-            width: 50px;
-            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 50px;
+            height: 50px;
+            border: 1px solid #333; /* Her kareye sınır ekleyelim */
         }
         .cell:nth-child(even) {
-            background-color: #b58863;
+            background-color: #b58863; /* Daha koyu renk */
         }
         .cell:nth-child(odd) {
-            background-color: #f0d9b5;
+            background-color: #f0d9b5; /* Daha açık renk */
         }
         .white-piece, .black-piece {
             width: 45px;
             height: 45px;
-        }
-        .cell.draggable {
-            cursor: pointer;
         }
     </style>
 </head>
@@ -63,12 +61,24 @@
         }
 
         function createBoard() {
+            let isEven = false;
             for (let row = 0; row < 8; row++) {
                 for (let col = 0; col < 8; col++) {
                     const cell = document.createElement('div');
                     cell.classList.add('cell');
                     cell.setAttribute('data-row', row);
                     cell.setAttribute('data-col', col);
+
+                    if (isEven) {
+                        cell.style.backgroundColor = "#b58863";
+                    } else {
+                        cell.style.backgroundColor = "#f0d9b5";
+                    }
+
+                    isEven = !isEven;
+                    if (col === 7) {
+                        isEven = !isEven;
+                    }
 
                     const piece = initialBoard[row][col];
                     if (piece) {
@@ -106,11 +116,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
