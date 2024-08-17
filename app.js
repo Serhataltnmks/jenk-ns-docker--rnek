@@ -1,15 +1,32 @@
 stages:
+  - clone
   - build
-  - test
   - sonar
 
-sonar:
-  stage: sonar
-  image: maven:3.8.1-jdk-11
+variables:
+  SONAR_PROJECT_KEY: "chess-ai-game"
+  SONAR_LOGIN: "sonar-token-ai"
+
+cache:
+  paths:
+    - .m2/repository
+
+clone_repository:
+  stage: clone
   script:
-    - mvn verify sonar:sonar -Dsonar.projectKey="chess-ai-game" -Dsonar.host.url="https://sonarqube.example.com" -Dsonar.login="$SONAR_TOKEN"
+    - git clone https://gitlab.com/serhataltnmks/chess-ai-game.git
+
+build:
+  stage: build
+  script:
+    - mvn clean package
+  artifacts:
+    paths:
+      - target/*.jar
+
+sonarqube_analysis:
+  stage: sonar
+  script:
+    - mvn sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.login=$SONAR_LOGIN
   only:
-    - merge_requests
     - master
-  variables:
-    SONAR_TOKEN: "chess1" # Jenkins'te ayarladığınız token adı
