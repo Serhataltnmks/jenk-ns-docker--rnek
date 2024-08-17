@@ -1,27 +1,16 @@
-image: maven:3.8.6-jdk-11
+wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+unzip ngrok-stable-linux-amd64.zip
+sudo mv ngrok /usr/local/bin
 
-stages:
-  - build
-  - test
-  - sonarqube
 
-variables:
-  SONAR_HOST_URL: "http://192.168.1.100:9000"  # Buraya SonarQube sunucunuzun IP adresini girin
-  SONAR_TOKEN: "sonar-token-ai"
 
-build:
-  stage: build
-  script:
-    - mvn clean package
 
-test:
-  stage: test
-  script:
-    - mvn test
 
-sonarqube:
-  stage: sonarqube
-  script:
-    - mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN
-  only:
-    - master
+ngrok authtoken <AuthToken>
+
+
+
+
+
+  ngrok http 9000
+
