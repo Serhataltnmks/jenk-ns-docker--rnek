@@ -57,12 +57,16 @@
         ];
 
         let currentPlayer = 'white'; // Beyaz başlar
+        let selectedPiece = null;
+        let selectedCell = null;
 
         function startGame() {
             makePiecesDraggable();
         }
 
         function createBoard() {
+            chessboard.innerHTML = ''; // Tahtayı temizle ve yeniden oluştur
+
             for (let row = 0; row < 8; row++) {
                 for (let col = 0; col < 8; col++) {
                     const cell = document.createElement('div');
@@ -86,37 +90,44 @@
 
         function makePiecesDraggable() {
             const cells = document.querySelectorAll('.cell');
-            let selectedPiece = null;
-            let selectedPieceData = null;
 
             cells.forEach(cell => {
                 cell.addEventListener('click', () => {
+                    const pieceElement = cell.querySelector('img');
+
                     if (selectedPiece) {
                         const targetPiece = cell.querySelector('img');
-                        if (isValidMove(selectedPieceData, cell, targetPiece)) {
-                            cell.innerHTML = '';
+
+                        if (isValidMove(selectedPiece.getAttribute('data-piece'), selectedCell, cell, targetPiece)) {
+                            cell.innerHTML = ''; // Hedef hücreyi temizle
                             cell.appendChild(selectedPiece);
-                            selectedPiece = null;
                             switchPlayer();
                         } else {
-                            alert('Geçersiz hamle!');
+                            selectedCell.appendChild(selectedPiece); // Geçersiz hamle, taşı geri koy
                         }
-                    } else if (cell.firstChild) {
-                        selectedPiece = cell.removeChild(cell.firstChild);
-                        selectedPieceData = selectedPiece.getAttribute('data-piece');
+
+                        selectedPiece = null;
+                        selectedCell = null;
+                    } else if (pieceElement && pieceElement.getAttribute('data-piece').includes(currentPlayer)) {
+                        selectedPiece = pieceElement;
+                        selectedCell = cell;
+                        selectedPiece = selectedCell.removeChild(selectedPiece); // Taşı hücreden çıkar
                     }
                 });
             });
         }
 
-        function isValidMove(piece, targetCell, targetPiece) {
+        function isValidMove(piece, startCell, targetCell, targetPiece) {
             const pieceType = piece.split('-')[1];
-            const startRow = parseInt(selectedPiece.parentElement.getAttribute('data-row'));
-            const startCol = parseInt(selectedPiece.parentElement.getAttribute('data-col'));
+            const startRow = parseInt(startCell.getAttribute('data-row'));
+            const startCol = parseInt(startCell.getAttribute('data-col'));
             const endRow = parseInt(targetCell.getAttribute('data-row'));
             const endCol = parseInt(targetCell.getAttribute('data-col'));
 
-            // Her taş için geçerli hamle kurallarını kontrol et
+            if (targetPiece && targetPiece.getAttribute('data-piece').includes(currentPlayer)) {
+                return false; // Kendi taşını yiyemezsin
+            }
+
             switch (pieceType) {
                 case 'pawn':
                     return isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece);
