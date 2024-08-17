@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_TOKEN = 'chess1'
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
@@ -18,13 +13,20 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
+            tools {
+                // Make sure the tool name matches exactly what you configured in Jenkins
+                sonarQubeScanner 'SonarQubeScanner'
+            }
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.login=$SONARQUBE_TOKEN'
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.login=chess2'
                 }
             }
         }
         stage('Run') {
+            when {
+                expression { return currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
             steps {
                 sh 'mvn spring-boot:run'
             }
