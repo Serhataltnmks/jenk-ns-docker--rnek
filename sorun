@@ -25,13 +25,13 @@
             justify-content: center;
             width: 50px;
             height: 50px;
-            border: 1px solid #333; /* Her kareye sınır ekleyelim */
+            border: 1px solid #333;
         }
         .cell:nth-child(even) {
-            background-color: #b58863; /* Daha koyu renk */
+            background-color: #b58863;
         }
         .cell:nth-child(odd) {
-            background-color: #f0d9b5; /* Daha açık renk */
+            background-color: #f0d9b5;
         }
         .white-piece, .black-piece {
             width: 45px;
@@ -56,12 +56,13 @@
             ["black-rook", "black-knight", "black-bishop", "black-queen", "black-king", "black-bishop", "black-knight", "black-rook"]
         ];
 
+        let currentPlayer = 'white'; // Beyaz başlar
+
         function startGame() {
             makePiecesDraggable();
         }
 
         function createBoard() {
-            let isEven = false;
             for (let row = 0; row < 8; row++) {
                 for (let col = 0; col < 8; col++) {
                     const cell = document.createElement('div');
@@ -69,22 +70,12 @@
                     cell.setAttribute('data-row', row);
                     cell.setAttribute('data-col', col);
 
-                    if (isEven) {
-                        cell.style.backgroundColor = "#b58863";
-                    } else {
-                        cell.style.backgroundColor = "#f0d9b5";
-                    }
-
-                    isEven = !isEven;
-                    if (col === 7) {
-                        isEven = !isEven;
-                    }
-
                     const piece = initialBoard[row][col];
                     if (piece) {
                         const pieceElement = document.createElement('img');
                         pieceElement.src = `/images/${piece}.png`;
                         pieceElement.classList.add(piece.includes('white') ? 'white-piece' : 'black-piece');
+                        pieceElement.setAttribute('data-piece', piece);
                         cell.appendChild(pieceElement);
                     }
 
@@ -96,20 +87,98 @@
         function makePiecesDraggable() {
             const cells = document.querySelectorAll('.cell');
             let selectedPiece = null;
+            let selectedPieceData = null;
 
             cells.forEach(cell => {
                 cell.addEventListener('click', () => {
                     if (selectedPiece) {
-                        // Hareket et
-                        cell.innerHTML = '';
-                        cell.appendChild(selectedPiece);
-                        selectedPiece = null;
+                        const targetPiece = cell.querySelector('img');
+                        if (isValidMove(selectedPieceData, cell, targetPiece)) {
+                            cell.innerHTML = '';
+                            cell.appendChild(selectedPiece);
+                            selectedPiece = null;
+                            switchPlayer();
+                        } else {
+                            alert('Geçersiz hamle!');
+                        }
                     } else if (cell.firstChild) {
-                        // Taşı seç
                         selectedPiece = cell.removeChild(cell.firstChild);
+                        selectedPieceData = selectedPiece.getAttribute('data-piece');
                     }
                 });
             });
+        }
+
+        function isValidMove(piece, targetCell, targetPiece) {
+            const pieceType = piece.split('-')[1];
+            const startRow = parseInt(selectedPiece.parentElement.getAttribute('data-row'));
+            const startCol = parseInt(selectedPiece.parentElement.getAttribute('data-col'));
+            const endRow = parseInt(targetCell.getAttribute('data-row'));
+            const endCol = parseInt(targetCell.getAttribute('data-col'));
+
+            // Her taş için geçerli hamle kurallarını kontrol et
+            switch (pieceType) {
+                case 'pawn':
+                    return isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece);
+                case 'rook':
+                    return isValidRookMove(startRow, startCol, endRow, endCol);
+                case 'knight':
+                    return isValidKnightMove(startRow, startCol, endRow, endCol);
+                case 'bishop':
+                    return isValidBishopMove(startRow, startCol, endRow, endCol);
+                case 'queen':
+                    return isValidQueenMove(startRow, startCol, endRow, endCol);
+                case 'king':
+                    return isValidKingMove(startRow, startCol, endRow, endCol);
+                default:
+                    return false;
+            }
+        }
+
+        function switchPlayer() {
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+        }
+
+        function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
+            const direction = piece.includes('white') ? -1 : 1;
+            const startRowForPawn = piece.includes('white') ? 6 : 1;
+
+            // Düz hareket
+            if (startCol === endCol) {
+                if (startRow + direction === endRow && !targetPiece) return true;
+                if (startRow === startRowForPawn && startRow + 2 * direction === endRow && !targetPiece) return true;
+            }
+
+            // Çapraz hareket
+            if (Math.abs(startCol - endCol) === 1 && startRow + direction === endRow && targetPiece) {
+                return true;
+            }
+
+            return false;
+        }
+
+        function isValidRookMove(startRow, startCol, endRow, endCol) {
+            return startRow === endRow || startCol === endCol;
+        }
+
+        function isValidKnightMove(startRow, startCol, endRow, endCol) {
+            const rowDiff = Math.abs(startRow - endRow);
+            const colDiff = Math.abs(startCol - endCol);
+            return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
+        }
+
+        function isValidBishopMove(startRow, startCol, endRow, endCol) {
+            return Math.abs(startRow - endRow) === Math.abs(startCol - endCol);
+        }
+
+        function isValidQueenMove(startRow, startCol, endRow, endCol) {
+            return isValidRookMove(startRow, startCol, endRow, endCol) || isValidBishopMove(startRow, startCol, endRow, endCol);
+        }
+
+        function isValidKingMove(startRow, startCol, endRow, endCol) {
+            const rowDiff = Math.abs(startRow - endRow);
+            const colDiff = Math.abs(startCol - endCol);
+            return rowDiff <= 1 && colDiff <= 1;
         }
 
         createBoard();
