@@ -7,51 +7,72 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            text-align: center;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
         }
-
+        #game-area {
+            display: flex;
+            align-items: center;
+        }
         #chessboard {
             display: grid;
-            grid-template-columns: repeat(8, 60px);
-            grid-template-rows: repeat(8, 60px);
-            gap: 0;
-            border: 2px solid #333;
-            margin-top: 20px;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            width: 400px;
+            height: 400px;
+            border: 2px solid black;
+            position: relative;
+            margin: 20px;
         }
-
         .cell {
-            width: 60px;
-            height: 60px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 30px;
-        }
-
-        .cell:nth-child(odd) {
-            background-color: #f0d9b5;
-        }
-
-        .cell:nth-child(even) {
-            background-color: #b58863;
-        }
-
-        .white-piece, .black-piece {
+            justify-content: center;
             width: 50px;
             height: 50px;
-            cursor: pointer;
         }
-
+        /* Karelerin standart satranç tahtası gibi renklendirilmesi */
+        .cell[data-row-even="true"][data-col-even="false"],
+        .cell[data-row-even="false"][data-col-even="true"] {
+            background-color: #b58863; /* Koyu renk */
+        }
+        .cell[data-row-even="true"][data-col-even="true"],
+        .cell[data-row-even="false"][data-col-even="false"] {
+            background-color: #f0d9b5; /* Açık renk */
+        }
+        .white-piece, .black-piece {
+            width: 45px;
+            height: 45px;
+        }
         .captured-pieces {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            width: 100px;
+            text-align: center;
         }
-
+        .captured-pieces h3 {
+            margin-bottom: 10px;
+        }
+        .captured-pieces img {
+            width: 45px;
+            height: 45px;
+        }
+        .board-label {
+            position: absolute;
+            font-size: 12px;
+            color: #000;
+        }
+        .file-label {
+            top: -20px;
+        }
+        .rank-label {
+            left: -20px;
+        }
         #game-status {
             margin-top: 20px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
         }
     </style>
@@ -86,13 +107,16 @@
             ["white-rook", "white-knight", "white-bishop", "white-queen", "white-king", "white-bishop", "white-knight", "white-rook"]
         ];
 
-        let currentPlayer = 'white';
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
+
+        let currentPlayer = 'white'; // Beyaz başlar
         let selectedPiece = null;
         let selectedCell = null;
 
         function startGame() {
             gameStatus.innerText = "";
-            createBoard();
+            makePiecesDraggable();
         }
 
         function createBoard() {
@@ -105,6 +129,10 @@
                     cell.setAttribute('data-row', row);
                     cell.setAttribute('data-col', col);
 
+                    // Satır ve sütun paritesine göre renklendirme
+                    cell.setAttribute('data-row-even', row % 2 === 0);
+                    cell.setAttribute('data-col-even', col % 2 === 0);
+
                     const piece = initialBoard[row][col];
                     if (piece) {
                         const pieceElement = document.createElement('img');
@@ -114,71 +142,110 @@
                         cell.appendChild(pieceElement);
                     }
 
-                    cell.addEventListener('click', () => onCellClick(cell));
                     chessboard.appendChild(cell);
+
+                    // Kare konumlarını ekleyelim
+                    if (col === 0) {
+                        const rankLabel = document.createElement('div');
+                        rankLabel.classList.add('board-label', 'rank-label');
+                        rankLabel.style.top = `${row * 50 + 20}px`;
+                        rankLabel.innerText = ranks[row];
+                        chessboard.appendChild(rankLabel);
+                    }
+
+                    if (row === 7) {
+                        const fileLabel = document.createElement('div');
+                        fileLabel.classList.add('board-label', 'file-label');
+                        fileLabel.style.left = `${col * 50 + 20}px`;
+                        fileLabel.innerText = files[col];
+                        chessboard.appendChild(fileLabel);
+                    }
                 }
             }
         }
 
-        function onCellClick(cell) {
-            const pieceElement = cell.querySelector('img');
+        function makePiecesDraggable() {
+            const cells = document.querySelectorAll('.cell');
 
-            if (selectedPiece && cell !== selectedCell) {
-                movePiece(selectedCell, cell);
-                selectedPiece = null;
-                selectedCell = null;
-            } else if (pieceElement && pieceElement.classList.contains(`${currentPlayer}-piece`)) {
-                selectedPiece = pieceElement;
-                selectedCell = cell;
+            cells.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    const pieceElement = cell.querySelector('img');
+
+                    if (selectedPiece) {
+                        const targetPiece = cell.querySelector('img');
+
+                        if (isValidMove(selectedPiece.getAttribute('data-piece'), selectedCell, cell, targetPiece)) {
+                            if (targetPiece) {
+                                capturePiece(targetPiece);
+                            }
+
+                            cell.innerHTML = ''; // Hedef hücreyi temizle
+                            cell.appendChild(selectedPiece);
+                            checkForWin();
+                            switchPlayer();
+                        } else {
+                            selectedCell.appendChild(selectedPiece); // Geçersiz hamle, taşı geri koy
+                        }
+
+                        selectedPiece = null;
+                        selectedCell = null;
+                    } else if (pieceElement && pieceElement.getAttribute('data-piece').includes(currentPlayer)) {
+                        selectedPiece = pieceElement;
+                        selectedCell = cell;
+                        selectedPiece = selectedCell.removeChild(selectedPiece); // Taşı hücreden çıkar
+                    }
+                });
+            });
+        }
+
+        function capturePiece(piece) {
+            if (piece.getAttribute('data-piece').includes('white')) {
+                blackCaptured.appendChild(piece);
+            } else {
+                whiteCaptured.appendChild(piece);
             }
         }
 
-        function movePiece(startCell, endCell) {
-            const piece = selectedPiece.getAttribute('data-piece');
-            const targetPiece = endCell.querySelector('img');
-
+        function isValidMove(piece, startCell, targetCell, targetPiece) {
+            const pieceType = piece.split('-')[1];
             const startRow = parseInt(startCell.getAttribute('data-row'));
             const startCol = parseInt(startCell.getAttribute('data-col'));
-            const endRow = parseInt(endCell.getAttribute('data-row'));
-            const endCol = parseInt(endCell.getAttribute('data-col'));
+            const endRow = parseInt(targetCell.getAttribute('data-row'));
+            const endCol = parseInt(targetCell.getAttribute('data-col'));
 
-            if (isValidMove(startRow, startCol, endRow, endCol, piece, targetPiece)) {
-                if (targetPiece) {
-                    capturePiece(targetPiece);
-                }
+            if (targetPiece && targetPiece.getAttribute('data-piece').includes(currentPlayer)) {
+                return false; // Kendi taşını yiyemezsin
+            }
 
-                endCell.appendChild(selectedPiece);
-                startCell.innerHTML = '';
-
-                if (isKingInCheck()) {
-                    alert("Check!");
-                }
-
-                switchPlayer();
-                checkForWin();
+            switch (pieceType) {
+                case 'pawn':
+                    return isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece);
+                case 'rook':
+                    return isValidRookMove(startRow, startCol, endRow, endCol);
+                case 'knight':
+                    return isValidKnightMove(startRow, startCol, endRow, endCol);
+                case 'bishop':
+                    return isValidBishopMove(startRow, startCol, endRow, endCol);
+                case 'queen':
+                    return isValidQueenMove(startRow, startCol, endRow, endCol);
+                case 'king':
+                    return isValidKingMove(startRow, startCol, endRow, endCol);
+                default:
+                    return false;
             }
         }
 
-        function isValidMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
-            if (piece.includes('pawn')) return isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece);
-            if (piece.includes('rook')) return isValidRookMove(startRow, startCol, endRow, endCol);
-            if (piece.includes('knight')) return isValidKnightMove(startRow, startCol, endRow, endCol);
-            if (piece.includes('bishop')) return isValidBishopMove(startRow, startCol, endRow, endCol);
-            if (piece.includes('queen')) return isValidQueenMove(startRow, startCol, endRow, endCol);
-            if (piece.includes('king')) return isValidKingMove(startRow, startCol, endRow, endCol);
-
-            return false;
-        }
-
-        function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
-            const direction = piece.includes('white') ? -1 : 1;
+                function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
+            const direction = piece.includes('white') ? -1 : 1; // Beyaz yukarı (negatif), siyah aşağı (pozitif) ilerler
             const startRowForPawn = piece.includes('white') ? 6 : 1;
 
+            // Düz hareket
             if (startCol === endCol) {
                 if (startRow + direction === endRow && !targetPiece) return true;
                 if (startRow === startRowForPawn && startRow + 2 * direction === endRow && !targetPiece) return true;
             }
 
+            // Çapraz hareket
             if (Math.abs(startCol - endCol) === 1 && startRow + direction === endRow && targetPiece) {
                 return true;
             }
@@ -189,6 +256,7 @@
         function isValidRookMove(startRow, startCol, endRow, endCol) {
             if (startRow !== endRow && startCol !== endCol) return false;
 
+            // Arada taş var mı kontrol et
             if (startRow === endRow) {
                 const step = startCol < endCol ? 1 : -1;
                 for (let col = startCol + step; col !== endCol; col += step) {
@@ -234,77 +302,11 @@
         function isValidKingMove(startRow, startCol, endRow, endCol) {
             const rowDiff = Math.abs(startRow - endRow);
             const colDiff = Math.abs(startCol - endCol);
-
-            // Rok (Castling) hamlesi
-            if (rowDiff === 0 && colDiff === 2) {
-                if (startCol < endCol) {
-                    // Kısa Rok (Kingside)
-                    const rookCell = document.querySelector(`[data-row="${startRow}"][data-col="7"]`);
-                    const rookPiece = rookCell.querySelector('img');
-                    if (rookPiece && rookPiece.getAttribute('data-piece') === `${currentPlayer}-rook`) {
-                        // Arada taş olmamalı
-                        const betweenCell = document.querySelector(`[data-row="${startRow}"][data-col="${startCol + 1}"]`);
-                        if (betweenCell.innerHTML === '') {
-                            // Rok yapılabilir
-                            movePiece(rookCell, document.querySelector(`[data-row="${startRow}"][data-col="${startCol + 1}"]`));
-                            return true;
-                        }
-                    }
-                } else {
-                    // Uzun Rok (Queenside)
-                    const rookCell = document.querySelector(`[data-row="${startRow}"][data-col="0"]`);
-                    const rookPiece = rookCell.querySelector('img');
-                    if (rookPiece && rookPiece.getAttribute('data-piece') === `${currentPlayer}-rook`) {
-                        // Arada taş olmamalı
-                        const betweenCell1 = document.querySelector(`[data-row="${startRow}"][data-col="${startCol - 1}"]`);
-                        const betweenCell2 = document.querySelector(`[data-row="${startRow}"][data-col="${startCol - 2}"]`);
-                        if (betweenCell1.innerHTML === '' && betweenCell2.innerHTML === '') {
-                            // Rok yapılabilir
-                            movePiece(rookCell, document.querySelector(`[data-row="${startRow}"][data-col="${startCol - 1}"]`));
-                            return true;
-                        }
-                    }
-                }
-            }
-
             return rowDiff <= 1 && colDiff <= 1;
-        }
-
-        function isKingInCheck() {
-            const kingCell = document.querySelector(`[data-piece="${currentPlayer}-king"]`);
-            const kingRow = parseInt(kingCell.getAttribute('data-row'));
-            const kingCol = parseInt(kingCell.getAttribute('data-col'));
-
-            const opponent = currentPlayer === 'white' ? 'black' : 'white';
-            const opponentPieces = document.querySelectorAll(`img[data-piece^="${opponent}"]`);
-
-            for (const piece of opponentPieces) {
-                const startRow = parseInt(piece.parentElement.getAttribute('data-row'));
-                const startCol = parseInt(piece.parentElement.getAttribute('data-col'));
-                if (isValidMove(startRow, startCol, kingRow, kingCol, piece.getAttribute('data-piece'), null)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        function capturePiece(pieceElement) {
-            const piece = pieceElement.getAttribute('data-piece');
-            if (piece.includes('white')) {
-                whiteCaptured.appendChild(pieceElement.cloneNode(true));
-            } else {
-                blackCaptured.appendChild(pieceElement.cloneNode(true));
-            }
         }
 
         function switchPlayer() {
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-            updateGameStatus();
-        }
-
-        function updateGameStatus() {
-            gameStatus.innerText = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s Turn`;
         }
 
         function checkForWin() {
@@ -328,7 +330,7 @@
         }
 
         createBoard();
-        updateGameStatus();
     </script>
 </body>
 </html>
+
