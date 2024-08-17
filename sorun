@@ -31,5 +31,121 @@ https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg
 
 
 
+nano src/main/resources/static/index.html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid black;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cell:nth-child(even) {
+            background-color: #b58863;
+        }
+        .cell:nth-child(odd) {
+            background-color: #f0d9b5;
+        }
+        .white-piece, .black-piece {
+            width: 45px;
+            height: 45px;
+        }
+        .cell.draggable {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chess Game</h1>
+    <div id="chessboard"></div>
+    <button onclick="startGame()">Start Game</button>
+    <script>
+        const chessboard = document.getElementById('chessboard');
+        const initialBoard = [
+            ["white-rook", "white-knight", "white-bishop", "white-queen", "white-king", "white-bishop", "white-knight", "white-rook"],
+            ["white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn"],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn"],
+            ["black-rook", "black-knight", "black-bishop", "black-queen", "black-king", "black-bishop", "black-knight", "black-rook"]
+        ];
+
+        function startGame() {
+            makePiecesDraggable();
+        }
+
+        function createBoard() {
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.setAttribute('data-row', row);
+                    cell.setAttribute('data-col', col);
+
+                    const piece = initialBoard[row][col];
+                    if (piece) {
+                        const pieceElement = document.createElement('img');
+                        pieceElement.src = `/images/${piece}.png`;
+                        pieceElement.classList.add(piece.includes('white') ? 'white-piece' : 'black-piece');
+                        cell.appendChild(pieceElement);
+                    }
+
+                    chessboard.appendChild(cell);
+                }
+            }
+        }
+
+        function makePiecesDraggable() {
+            const cells = document.querySelectorAll('.cell');
+            let selectedPiece = null;
+
+            cells.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    if (selectedPiece) {
+                        // Hareket et
+                        cell.innerHTML = '';
+                        cell.appendChild(selectedPiece);
+                        selectedPiece = null;
+                    } else if (cell.firstChild) {
+                        // Taşı seç
+                        selectedPiece = cell.removeChild(cell.firstChild);
+                    }
+                });
+            });
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
+
+
+
+
+
+
 
 
