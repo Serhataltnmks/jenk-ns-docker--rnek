@@ -3,7 +3,7 @@ unzip ngrok-stable-linux-amd64.zip
 sudo mv ngrok /usr/local/bin
 
 
-
+2knZnAtN10yWEHhYiBExqYcA98N_2FoVrzFJx5LiexC6Z7xAv
 
 
 ngrok authtoken <AuthToken>
