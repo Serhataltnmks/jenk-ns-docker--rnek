@@ -1,39 +1,37 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///orders.db'
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
+    <groupId>com.example</groupId>
+    <artifactId>chess-ai-game</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    product_name = db.Column(db.String(100))
-    quantity = db.Column(db.Integer)
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
 
-class OrderSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Order
+    <properties>
+        <java.version>11</java.version>
+    </properties>
 
-order_schema = OrderSchema()
-orders_schema = OrderSchema(many=True)
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
 
-@app.route('/order', methods=['POST'])
-def add_order():
-    product_name = request.json['product_name']
-    quantity = request.json['quantity']
-    new_order = Order(product_name=product_name, quantity=quantity)
-    db.session.add(new_order)
-    db.session.commit()
-    return order_schema.jsonify(new_order)
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
-@app.route('/orders', methods=['GET'])
-def get_orders():
-    all_orders = Order.query.all()
-    return orders_schema.jsonify(all_orders)
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(host='0.0.0.0', port=5002)
+</project>
