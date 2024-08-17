@@ -1,38 +1,3 @@
-curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
-
-
-
-sudo chmod +x /usr/local/bin/gitlab-runner
-
-
-sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
-
-
-
-sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
-
-
-sudo gitlab-runner register
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 image: maven:3.8.6-jdk-11
 
 stages:
@@ -41,8 +6,8 @@ stages:
   - sonarqube
 
 variables:
-  SONAR_HOST_URL: "http://{YOUR_SONARQUBE_SERVER}"
-  SONAR_TOKEN: "sonar-token-ai"  # SonarQube Token
+  SONAR_HOST_URL: "http://192.168.1.100:9000"  # Buraya SonarQube sunucunuzun IP adresini girin
+  SONAR_TOKEN: "sonar-token-ai"
 
 build:
   stage: build
@@ -57,7 +22,6 @@ test:
 sonarqube:
   stage: sonarqube
   script:
-    - mvn sonar:sonar -Dsonar.projectKey=chess-ai-game
+    - mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN
   only:
     - master
-
