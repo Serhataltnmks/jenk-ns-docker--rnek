@@ -1,1 +1,109 @@
-rm -rf ~/project
+1. Proje Dizini Oluşturma ve Maven ile Spring Boot Projesi Başlatma
+mkdir chess-ai-game
+cd chess-ai-game
+mvn archetype:generate -DgroupId=com.example.chess -DartifactId=chess-ai-game -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd chess-ai-game
+-------------------------------------------
+2. Dizinlerin ve Dosyaların Oluşturulması
+mkdir -p src/main/java/com/example/chess/controller
+mkdir -p src/main/java/com/example/chess/service
+mkdir -p src/main/java/com/example/chess/model
+mkdir -p src/main/resources
+----------------------------------------------
+nano src/main/java/com/example/chess/controller/GameController.java
+
+package com.example.chess.controller;
+
+import com.example.chess.service.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/game")
+public class GameController {
+
+    @Autowired
+    private GameService gameService;
+
+    @GetMapping("/start")
+    public String startGame() {
+        return "Satranç oyunu başladı!";
+    }
+
+    @PostMapping("/move")
+    public String makeMove(@RequestBody String move) {
+        return gameService.processMove(move);
+    }
+}
+-----------------------------------------------------------------------
+nano src/main/java/com/example/chess/service/GameService.java
+
+package com.example.chess.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class GameService {
+
+    public String processMove(String move) {
+        return "İşlenen hamle: " + move;
+    }
+}
+----------------------------------------------------
+nano src/main/java/com/example/chess/model/Move.java
+
+package com.example.chess.model;
+
+public class Move {
+    private String from;
+    private String to;
+
+    public Move(String from, String to) {
+        this.from = from;
+        this.to = to;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+}
+---------------------------------------------------
+
+nano src/main/resources/application.properties
+
+server.port=8081
+
+mvn spring-boot:run
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
