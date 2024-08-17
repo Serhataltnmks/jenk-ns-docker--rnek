@@ -1,111 +1,46 @@
-nano src/main/java/com/example/chess/model/Piece.java
+nano src/main/java/com/example/chess/service/GameService.java
 
 
 
-package com.example.chess.model;
 
-public class Piece {
-    public enum Type { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING }
-    public enum Color { WHITE, BLACK }
 
-    private Type type;
-    private Color color;
-    private int x;  // Current x position on the board
-    private int y;  // Current y position on the board
+package com.example.chess.service;
 
-    public Piece(Type type, Color color, int x, int y) {
-        this.type = type;
-        this.color = color;
-        this.x = x;
-        this.y = y;
+import com.example.chess.model.Board;
+import com.example.chess.model.Piece;
+import org.springframework.stereotype.Service;
+
+@Service
+public class GameService {
+
+    private Board board;
+
+    public GameService() {
+        this.board = new Board();
     }
 
-    public Type getType() {
-        return type;
-    }
+    public String processMove(String move) {
+        // Örneğin, "e2e4" şeklinde bir hamleyi işle
+        int fromX = move.charAt(0) - 'a';
+        int fromY = move.charAt(1) - '1';
+        int toX = move.charAt(2) - 'a';
+        int toY = move.charAt(3) - '1';
 
-    public Color getColor() {
-        return color;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void move(int newX, int newY) {
-        this.x = newX;
-        this.y = newY;
-    }
-}
-----------------------------------------------------------------------------
-
-nano src/main/java/com/example/chess/model/Board.java
-
-
-
-package com.example.chess.model;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class Board {
-    private List<Piece> pieces;
-
-    public Board() {
-        this.pieces = new ArrayList<>();
-        initializeBoard();
-    }
-
-    private void initializeBoard() {
-        // Satranç tahtasını başlatır, örneğin piyonları yerleştirir
-        for (int i = 0; i < 8; i++) {
-            pieces.add(new Piece(Piece.Type.PAWN, Piece.Color.WHITE, i, 1));
-            pieces.add(new Piece(Piece.Type.PAWN, Piece.Color.BLACK, i, 6));
+        Piece piece = getPieceAt(fromX, fromY);
+        if (piece == null) {
+            return "Geçersiz hamle: Taş bulunamadı!";
         }
-        // Diğer taşları da ekleyin (kale, at, fil, vezir, şah)
+
+        boolean success = board.movePiece(piece, toX, toY);
+        return success ? "Hamle başarıyla gerçekleştirildi!" : "Geçersiz hamle!";
     }
 
-    public List<Piece> getPieces() {
-        return pieces;
-    }
-
-    public boolean movePiece(Piece piece, int newX, int newY) {
-        // Hamleyi kontrol eder ve taşın hareket edip edemeyeceğine karar verir
-        piece.move(newX, newY);
-        return true;
+    private Piece getPieceAt(int x, int y) {
+        for (Piece piece : board.getPieces()) {
+            if (piece.getX() == x && piece.getY() == y) {
+                return piece;
+            }
+        }
+        return null;
     }
 }
------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
