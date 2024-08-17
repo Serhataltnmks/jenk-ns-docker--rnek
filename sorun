@@ -1,25 +1,14 @@
-src/main/java/com/example/chess/controller/GameController.java
+nano src/main/java/com/example/chess/ChessAiGameApplication.java
 
-package com.example.chess.controller;
+package com.example.chess;
 
-import com.example.chess.service.GameService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@RestController
-@RequestMapping("/game")
-public class GameController {
+@SpringBootApplication
+public class ChessAiGameApplication {
 
-    @Autowired
-    private GameService gameService;
-
-    @GetMapping("/start")
-    public String startGame() {
-        return "Satranç oyunu başladı!";
-    }
-
-    @PostMapping("/move")
-    public String makeMove(@RequestBody String move) {
-        return gameService.processMove(move);
+    public static void main(String[] args) {
+        SpringApplication.run(ChessAiGameApplication.class, args);
     }
 }
