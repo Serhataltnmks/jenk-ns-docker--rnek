@@ -1,32 +1,25 @@
-stages:
-  - clone
-  - build
-  - sonar
-
-variables:
-  SONAR_PROJECT_KEY: "chess-ai-game"
-  SONAR_LOGIN: "sonar-token-ai"
-
-cache:
-  paths:
-    - .m2/repository
-
-clone_repository:
-  stage: clone
-  script:
-    - git clone https://gitlab.com/serhataltnmks/chess-ai-game.git
-
-build:
-  stage: build
-  script:
-    - mvn clean package
-  artifacts:
-    paths:
-      - target/*.jar
-
-sonarqube_analysis:
-  stage: sonar
-  script:
-    - mvn sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.login=$SONAR_LOGIN
-  only:
-    - master
+Running with gitlab-runner 17.0.0~pre.88.g761ae5dd (761ae5dd)
+  on green-3.saas-linux-small-amd64.runners-manager.gitlab.com/default Jhc_Jxvh, system ID: s_0e6850b2bce1
+Preparing the "docker+machine" executor 00:20
+Using Docker executor with image ruby:3.1 ...
+Pulling docker image ruby:3.1 ...
+Using docker image sha256:3ad239d6e3a500a646ee4f9d1523135a4c44f19c3abf1b4556eb5db4f375b9d5 for ruby:3.1 with digest ruby@sha256:34368e5da74213593681c4665bbf9efe4e7fec3956d19208ea0822b5bbd754a4 ...
+Preparing environment 00:04
+Running on runner-jhcjxvh-project-60925319-concurrent-0 via runner-jhcjxvh-s-l-s-amd64-1723916614-3bdd15c5...
+Getting source from Git repository 00:01
+Fetching changes with git depth set to 20...
+Initialized empty Git repository in /builds/serhataltnmks/chess-ai-game/.git/
+Created fresh repository.
+Checking out 1a5e73a0 as detached HEAD (ref is master)...
+Skipping Git submodules setup
+$ git remote set-url origin "${CI_REPOSITORY_URL}"
+Restoring cache 00:01
+Checking cache for default-protected...
+Downloading cache from https://storage.googleapis.com/gitlab-com-runners-cache/project/60925319/default-protected 
+Successfully extracted cache
+Executing "step_script" stage of the job script 00:01
+Using docker image sha256:3ad239d6e3a500a646ee4f9d1523135a4c44f19c3abf1b4556eb5db4f375b9d5 for ruby:3.1 with digest ruby@sha256:34368e5da74213593681c4665bbf9efe4e7fec3956d19208ea0822b5bbd754a4 ...
+$ mvn clean package
+/usr/bin/bash: line 147: mvn: command not found
+Cleaning up project directory and file based variables 00:00
+ERROR: Job failed: exit code 1
