@@ -34,11 +34,20 @@
             height: 50px;
             border: 1px solid #333;
         }
+        .cell:nth-child(odd) {
+            background-color: #f0d9b5;
+        }
         .cell:nth-child(even) {
             background-color: #b58863;
         }
-        .cell:nth-child(odd) {
+        /* Satırların renklendirilmesi için düzenleme */
+        #chessboard > .cell:nth-child(odd):nth-child(8n+1),
+        #chessboard > .cell:nth-child(even):nth-child(8n) {
             background-color: #f0d9b5;
+        }
+        #chessboard > .cell:nth-child(odd):nth-child(8n),
+        #chessboard > .cell:nth-child(even):nth-child(8n+1) {
+            background-color: #b58863;
         }
         .white-piece, .black-piece {
             width: 45px;
@@ -220,16 +229,13 @@
             }
         }
 
-        function switchPlayer() {
-            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-        }
-                function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
+        function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
             const direction = piece.includes('white') ? -1 : 1; // Beyaz yukarı (negatif), siyah aşağı (pozitif)
             const startRowForPawn = piece.includes('white') ? 6 : 1;
 
             // Düz hareket
             if (startCol === endCol) {
-                if (startRow + direction === endRow && !targetPiece) return true;
+                    if (startRow + direction === endRow && !targetPiece) return true;
                 if (startRow === startRowForPawn && startRow + 2 * direction === endRow && !targetPiece) return true;
             }
 
@@ -293,9 +299,12 @@
             return rowDiff <= 1 && colDiff <= 1;
         }
 
+        function switchPlayer() {
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+        }
+
         createBoard();
     </script>
 </body>
 </html>
-
 
