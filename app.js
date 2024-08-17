@@ -37,18 +37,27 @@ image: maven:3.8.6-jdk-11
 
 stages:
   - build
-  - sonar_analysis
+  - test
+  - sonarqube
+
+variables:
+  SONAR_HOST_URL: "http://{YOUR_SONARQUBE_SERVER}"
+  SONAR_TOKEN: "sonar-token-ai"  # SonarQube Token
 
 build:
   stage: build
   script:
     - mvn clean package
-  artifacts:
-    paths:
-      - target/*.jar
 
-sonar_analysis:
-  stage: sonar_analysis
+test:
+  stage: test
   script:
-    - mvn sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.host.url=http://192.168.1.100:9000 -Dsonar.login=$SONAR_LOGIN
+    - mvn test
+
+sonarqube:
+  stage: sonarqube
+  script:
+    - mvn sonar:sonar -Dsonar.projectKey=chess-ai-game
+  only:
+    - master
 
