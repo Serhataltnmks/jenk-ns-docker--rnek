@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: 'gitlab-token-ai', url: 'https://gitlab.com/serhataltnmks/chess-ai-game.git'
+                git credentialsId: 'chess', url: 'https://gitlab.com/serhataltnmks/chess-ai-game.git'
             }
         }
         stage('Build') {
@@ -14,11 +14,11 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             environment {
-                scannerHome = tool 'SonarQubeScanner'
+                SONAR_TOKEN = credentials('sonar-token-ai')
             }
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.login=sonar-token-ai'
+                    sh "mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.login=${SONAR_TOKEN}"
                 }
             }
         }
