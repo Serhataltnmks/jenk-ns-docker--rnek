@@ -1,46 +1,75 @@
-nano src/main/java/com/example/chess/service/GameService.java
+mkdir -p src/main/resources/static
+nano src/main/resources/static/index.html
 
 
 
 
 
-package com.example.chess.service;
 
-import com.example.chess.model.Board;
-import com.example.chess.model.Piece;
-import org.springframework.stereotype.Service;
 
-@Service
-public class GameService {
 
-    private Board board;
 
-    public GameService() {
-        this.board = new Board();
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            width: 400px;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .cell:nth-child(even) {
+            background-color: #b58863;
+        }
+        .cell:nth-child(odd) {
+            background-color: #f0d9b5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chess Game</h1>
+    <div id="chessboard"></div>
+    <button onclick="startGame()">Start Game</button>
+    <script>
+        const chessboard = document.getElementById('chessboard');
 
-    public String processMove(String move) {
-        // Örneğin, "e2e4" şeklinde bir hamleyi işle
-        int fromX = move.charAt(0) - 'a';
-        int fromY = move.charAt(1) - '1';
-        int toX = move.charAt(2) - 'a';
-        int toY = move.charAt(3) - '1';
-
-        Piece piece = getPieceAt(fromX, fromY);
-        if (piece == null) {
-            return "Geçersiz hamle: Taş bulunamadı!";
+        function startGame() {
+            fetch('/game/start')
+                .then(response => response.text())
+                .then(data => alert(data));
         }
 
-        boolean success = board.movePiece(piece, toX, toY);
-        return success ? "Hamle başarıyla gerçekleştirildi!" : "Geçersiz hamle!";
-    }
-
-    private Piece getPieceAt(int x, int y) {
-        for (Piece piece : board.getPieces()) {
-            if (piece.getX() == x && piece.getY() == y) {
-                return piece;
+        function createBoard() {
+            const cells = [];
+            for (let i = 0; i < 64; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cells.push(cell);
             }
+            cells.forEach(cell => chessboard.appendChild(cell));
         }
-        return null;
-    }
-}
+
+        createBoard();
+    </script>
+</body>
+</html>
+
+
+
