@@ -1,26 +1,15 @@
-pipeline {
-    agent any
+stages:
+  - build
+  - test
+  - sonar
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git credentialsId: 'chess', url: 'https://gitlab.com/serhataltnmks/chess-ai-game.git'
-            }
-        }
-        stage('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-        stage('SonarQube Analysis') {
-            environment {
-                SONAR_TOKEN = credentials('sonar-token-ai')
-            }
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.login=${SONAR_TOKEN}"
-                }
-            }
-        }
-    }
-}
+sonar:
+  stage: sonar
+  image: maven:3.8.1-jdk-11
+  script:
+    - mvn verify sonar:sonar -Dsonar.projectKey="chess-ai-game" -Dsonar.host.url="https://sonarqube.example.com" -Dsonar.login="$SONAR_TOKEN"
+  only:
+    - merge_requests
+    - master
+  variables:
+    SONAR_TOKEN: "chess1" # Jenkins'te ayarladığınız token adı
