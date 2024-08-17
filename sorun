@@ -8,6 +8,13 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #game-area {
+            display: flex;
+            align-items: center;
         }
         #chessboard {
             display: grid;
@@ -15,9 +22,9 @@
             grid-template-rows: repeat(8, 50px);
             width: 400px;
             height: 400px;
-            margin: 20px auto;
             border: 2px solid black;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            margin: 20px;
         }
         .cell {
             display: flex;
@@ -37,24 +44,62 @@
             width: 45px;
             height: 45px;
         }
+        .captured-pieces {
+            display: flex;
+            flex-direction: column;
+            width: 100px;
+            text-align: center;
+        }
+        .captured-pieces h3 {
+            margin-bottom: 10px;
+        }
+        .captured-pieces img {
+            width: 45px;
+            height: 45px;
+        }
+        .board-label {
+            position: absolute;
+            font-size: 12px;
+            color: #000;
+        }
+        .file-label {
+            top: -20px;
+        }
+        .rank-label {
+            left: -20px;
+        }
     </style>
 </head>
 <body>
     <h1>Chess Game</h1>
-    <div id="chessboard"></div>
+    <div id="game-area">
+        <div class="captured-pieces" id="white-captured">
+            <h3>White Captured</h3>
+        </div>
+        <div id="chessboard"></div>
+        <div class="captured-pieces" id="black-captured">
+            <h3>Black Captured</h3>
+        </div>
+    </div>
     <button onclick="startGame()">Start Game</button>
     <script>
         const chessboard = document.getElementById('chessboard');
+        const whiteCaptured = document.getElementById('white-captured');
+        const blackCaptured = document.getElementById('black-captured');
+
         const initialBoard = [
-            ["white-rook", "white-knight", "white-bishop", "white-queen", "white-king", "white-bishop", "white-knight", "white-rook"],
-            ["white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn"],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
+            ["black-rook", "black-knight", "black-bishop", "black-queen", "black-king", "black-bishop", "black-knight", "black-rook"],
             ["black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn", "black-pawn"],
-            ["black-rook", "black-knight", "black-bishop", "black-queen", "black-king", "black-bishop", "black-knight", "black-rook"]
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn", "white-pawn"],
+            ["white-rook", "white-knight", "white-bishop", "white-queen", "white-king", "white-bishop", "white-knight", "white-rook"]
         ];
+
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
 
         let currentPlayer = 'white'; // Beyaz başlar
         let selectedPiece = null;
@@ -84,6 +129,23 @@
                     }
 
                     chessboard.appendChild(cell);
+
+                    // Kare konumlarını ekleyelim
+                    if (col === 0) {
+                        const rankLabel = document.createElement('div');
+                        rankLabel.classList.add('board-label', 'rank-label');
+                        rankLabel.style.top = `${row * 50 + 20}px`;
+                        rankLabel.innerText = ranks[row];
+                        chessboard.appendChild(rankLabel);
+                    }
+
+                    if (row === 7) {
+                        const fileLabel = document.createElement('div');
+                        fileLabel.classList.add('board-label', 'file-label');
+                        fileLabel.style.left = `${col * 50 + 20}px`;
+                        fileLabel.innerText = files[col];
+                        chessboard.appendChild(fileLabel);
+                    }
                 }
             }
         }
@@ -99,6 +161,10 @@
                         const targetPiece = cell.querySelector('img');
 
                         if (isValidMove(selectedPiece.getAttribute('data-piece'), selectedCell, cell, targetPiece)) {
+                            if (targetPiece) {
+                                capturePiece(targetPiece);
+                            }
+
                             cell.innerHTML = ''; // Hedef hücreyi temizle
                             cell.appendChild(selectedPiece);
                             switchPlayer();
@@ -115,6 +181,14 @@
                     }
                 });
             });
+        }
+
+        function capturePiece(piece) {
+            if (piece.getAttribute('data-piece').includes('white')) {
+                blackCaptured.appendChild(piece);
+            } else {
+                whiteCaptured.appendChild(piece);
+            }
         }
 
         function isValidMove(piece, startCell, targetCell, targetPiece) {
@@ -149,8 +223,7 @@
         function switchPlayer() {
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
         }
-
-        function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
+                function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
             const direction = piece.includes('white') ? -1 : 1; // Beyaz yukarı (negatif), siyah aşağı (pozitif)
             const startRowForPawn = piece.includes('white') ? 6 : 1;
 
@@ -211,15 +284,12 @@
         }
 
         function isValidQueenMove(startRow, startCol, endRow, endCol) {
-            // Vezir, hem kale hem de fil gibi hareket edebilir
             return isValidRookMove(startRow, startCol, endRow, endCol) || isValidBishopMove(startRow, startCol, endRow, endCol);
         }
 
         function isValidKingMove(startRow, startCol, endRow, endCol) {
             const rowDiff = Math.abs(startRow - endRow);
             const colDiff = Math.abs(startCol - endCol);
-
-            // Şah, her yönde sadece bir kare hareket edebilir
             return rowDiff <= 1 && colDiff <= 1;
         }
 
@@ -227,3 +297,5 @@
     </script>
 </body>
 </html>
+
+
