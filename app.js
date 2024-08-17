@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: 'YOUR_CREDENTIALS_ID', url: 'https://gitlab.com/serhataltnmks/chess-ai-game.git'
+                git credentialsId: 'chess', url: 'https://gitlab.com/serhataltnmks/chess-ai-game.git'
             }
         }
         stage('Build') {
