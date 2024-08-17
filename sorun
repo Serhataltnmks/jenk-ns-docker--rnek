@@ -7,73 +7,62 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             display: flex;
+            justify-content: center;
+            align-items: center;
             flex-direction: column;
-            align-items: center;
         }
-        #game-area {
-            display: flex;
-            align-items: center;
-        }
+
         #chessboard {
             display: grid;
-            grid-template-columns: repeat(8, 50px);
-            grid-template-rows: repeat(8, 50px);
-            width: 400px;
-            height: 400px;
-            border: 2px solid black;
-            position: relative;
-            margin: 20px;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            gap: 0;
+            border: 2px solid #333;
+            margin-top: 20px;
         }
+
         .cell {
+            width: 60px;
+            height: 60px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            align-items: center;
+            font-size: 30px;
         }
-        /* Karelerin standart satranç tahtası gibi renklendirilmesi */
-        .cell[data-row-even="true"][data-col-even="false"],
-        .cell[data-row-even="false"][data-col-even="true"] {
-            background-color: #b58863; /* Koyu renk */
+
+        .cell:nth-child(odd) {
+            background-color: #f0d9b5;
         }
-        .cell[data-row-even="true"][data-col-even="true"],
-        .cell[data-row-even="false"][data-col-even="false"] {
-            background-color: #f0d9b5; /* Açık renk */
+
+        .cell:nth-child(even) {
+            background-color: #b58863;
         }
-        .white-piece, .black-piece {
-            width: 45px;
-            height: 45px;
+
+        .white-piece {
+            cursor: pointer;
         }
+
+        .black-piece {
+            cursor: pointer;
+        }
+
         .captured-pieces {
-            display: flex;
-            flex-direction: column;
-            width: 100px;
-            text-align: center;
+            margin-top: 20px;
         }
-        .captured-pieces h3 {
-            margin-bottom: 10px;
-        }
-        .captured-pieces img {
-            width: 45px;
-            height: 45px;
-        }
-        .board-label {
-            position: absolute;
-            font-size: 12px;
-            color: #000;
-        }
-        .file-label {
-            top: -20px;
-        }
-        .rank-label {
-            left: -20px;
-        }
+
         #game-status {
             margin-top: 20px;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
+        }
+
+        #clock {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 400px;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -90,11 +79,17 @@
     </div>
     <button onclick="startGame()">Start Game</button>
     <div id="game-status"></div>
+    <div id="clock">
+        <div>White Time: <span id="white-time">10:00</span></div>
+        <div>Black Time: <span id="black-time">10:00</span></div>
+    </div>
     <script>
         const chessboard = document.getElementById('chessboard');
         const whiteCaptured = document.getElementById('white-captured');
         const blackCaptured = document.getElementById('black-captured');
         const gameStatus = document.getElementById('game-status');
+        const whiteTimeDisplay = document.getElementById('white-time');
+        const blackTimeDisplay = document.getElementById('black-time');
 
         const initialBoard = [
             ["black-rook", "black-knight", "black-bishop", "black-queen", "black-king", "black-bishop", "black-knight", "black-rook"],
@@ -107,16 +102,20 @@
             ["white-rook", "white-knight", "white-bishop", "white-queen", "white-king", "white-bishop", "white-knight", "white-rook"]
         ];
 
-        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
-
         let currentPlayer = 'white'; // Beyaz başlar
         let selectedPiece = null;
         let selectedCell = null;
+        let whiteTime = 600; // 10 dakika
+        let blackTime = 600; // 10 dakika
+        let gameInterval;
 
         function startGame() {
             gameStatus.innerText = "";
-            makePiecesDraggable();
+            whiteTime = 600;
+            blackTime = 600;
+            updateClock();
+            gameInterval = setInterval(updateClock, 1000);
+            createBoard();
         }
 
         function createBoard() {
@@ -129,10 +128,6 @@
                     cell.setAttribute('data-row', row);
                     cell.setAttribute('data-col', col);
 
-                    // Satır ve sütun paritesine göre renklendirme
-                    cell.setAttribute('data-row-even', row % 2 === 0);
-                    cell.setAttribute('data-col-even', col % 2 === 0);
-
                     const piece = initialBoard[row][col];
                     if (piece) {
                         const pieceElement = document.createElement('img');
@@ -142,98 +137,57 @@
                         cell.appendChild(pieceElement);
                     }
 
+                    cell.addEventListener('click', () => onCellClick(cell));
                     chessboard.appendChild(cell);
-
-                    // Kare konumlarını ekleyelim
-                    if (col === 0) {
-                        const rankLabel = document.createElement('div');
-                        rankLabel.classList.add('board-label', 'rank-label');
-                        rankLabel.style.top = `${row * 50 + 20}px`;
-                        rankLabel.innerText = ranks[row];
-                        chessboard.appendChild(rankLabel);
-                    }
-
-                    if (row === 7) {
-                        const fileLabel = document.createElement('div');
-                        fileLabel.classList.add('board-label', 'file-label');
-                        fileLabel.style.left = `${col * 50 + 20}px`;
-                        fileLabel.innerText = files[col];
-                        chessboard.appendChild(fileLabel);
-                    }
                 }
             }
         }
 
-        function makePiecesDraggable() {
-            const cells = document.querySelectorAll('.cell');
+        function onCellClick(cell) {
+            const pieceElement = cell.querySelector('img');
 
-            cells.forEach(cell => {
-                cell.addEventListener('click', () => {
-                    const pieceElement = cell.querySelector('img');
-
-                    if (selectedPiece) {
-                        const targetPiece = cell.querySelector('img');
-
-                        if (isValidMove(selectedPiece.getAttribute('data-piece'), selectedCell, cell, targetPiece)) {
-                            if (targetPiece) {
-                                capturePiece(targetPiece);
-                            }
-
-                            cell.innerHTML = ''; // Hedef hücreyi temizle
-                            cell.appendChild(selectedPiece);
-                            checkForWin();
-                            switchPlayer();
-                        } else {
-                            selectedCell.appendChild(selectedPiece); // Geçersiz hamle, taşı geri koy
-                        }
-
-                        selectedPiece = null;
-                        selectedCell = null;
-                    } else if (pieceElement && pieceElement.getAttribute('data-piece').includes(currentPlayer)) {
-                        selectedPiece = pieceElement;
-                        selectedCell = cell;
-                        selectedPiece = selectedCell.removeChild(selectedPiece); // Taşı hücreden çıkar
-                    }
-                });
-            });
-        }
-
-        function capturePiece(piece) {
-            if (piece.getAttribute('data-piece').includes('white')) {
-                blackCaptured.appendChild(piece);
-            } else {
-                whiteCaptured.appendChild(piece);
+            if (selectedPiece && cell !== selectedCell) {
+                movePiece(selectedCell, cell);
+                selectedPiece = null;
+                selectedCell = null;
+            } else if (pieceElement && pieceElement.classList.contains(`${currentPlayer}-piece`)) {
+                selectedPiece = pieceElement;
+                selectedCell = cell;
             }
         }
 
-        function isValidMove(piece, startCell, targetCell, targetPiece) {
-            const pieceType = piece.split('-')[1];
+        function movePiece(startCell, endCell) {
+            const piece = selectedPiece.getAttribute('data-piece');
+            const targetPiece = endCell.querySelector('img');
+
             const startRow = parseInt(startCell.getAttribute('data-row'));
             const startCol = parseInt(startCell.getAttribute('data-col'));
-            const endRow = parseInt(targetCell.getAttribute('data-row'));
-            const endCol = parseInt(targetCell.getAttribute('data-col'));
+            const endRow = parseInt(endCell.getAttribute('data-row'));
+            const endCol = parseInt(endCell.getAttribute('data-col'));
 
-            if (targetPiece && targetPiece.getAttribute('data-piece').includes(currentPlayer)) {
-                return false; // Kendi taşını yiyemezsin
-            }
+            if (isValidMove(startRow, startCol, endRow, endCol, piece, targetPiece)) {
+                if (targetPiece) {
+                    capturePiece(targetPiece);
+                }
 
-            switch (pieceType) {
-                case 'pawn':
-                    return isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece);
-                case 'rook':
-                    return isValidRookMove(startRow, startCol, endRow, endCol);
-                case 'knight':
-                    return isValidKnightMove(startRow, startCol, endRow, endCol);
-                case 'bishop':
-                    return isValidBishopMove(startRow, startCol, endRow, endCol);
-                case 'queen':
-                    return isValidQueenMove(startRow, startCol, endRow, endCol);
-                case 'king':
-                    return isValidKingMove(startRow, startCol, endRow, endCol);
-                default:
-                    return false;
+                endCell.appendChild(selectedPiece);
+                startCell.innerHTML = '';
+                switchPlayer();
+                checkForWin();
             }
         }
+
+        function isValidMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
+            if (piece.includes('pawn')) return isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece);
+            if (piece.includes('rook')) return isValidRookMove(startRow, startCol, endRow, endCol);
+            if (piece.includes('knight')) return isValidKnightMove(startRow, startCol, endRow, endCol);
+            if (piece.includes('bishop')) return isValidBishopMove(startRow, startCol, endRow, endCol);
+            if (piece.includes('queen')) return isValidQueenMove(startRow, startCol, endRow, endCol);
+            if (piece.includes('king')) return isValidKingMove(startRow, startCol, endRow, endCol);
+
+            return false;
+        }
+
         function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
             const direction = piece.includes('white') ? -1 : 1; // Beyaz yukarı (negatif), siyah aşağı (pozitif) ilerler
             const startRowForPawn = piece.includes('white') ? 6 : 1;
@@ -270,7 +224,6 @@
 
             return true;
         }
-
         function isValidKnightMove(startRow, startCol, endRow, endCol) {
             const rowDiff = Math.abs(startRow - endRow);
             const colDiff = Math.abs(startCol - endCol);
@@ -304,8 +257,22 @@
             return rowDiff <= 1 && colDiff <= 1;
         }
 
+        function capturePiece(pieceElement) {
+            const piece = pieceElement.getAttribute('data-piece');
+            if (piece.includes('white')) {
+                whiteCaptured.appendChild(pieceElement.cloneNode(true));
+            } else {
+                blackCaptured.appendChild(pieceElement.cloneNode(true));
+            }
+        }
+
         function switchPlayer() {
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            updateGameStatus();
+        }
+
+        function updateGameStatus() {
+            gameStatus.innerText = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s Turn`;
         }
 
         function checkForWin() {
@@ -322,15 +289,43 @@
         }
 
         function endGame() {
+            clearInterval(gameInterval);
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
                 cell.replaceWith(cell.cloneNode(true)); // Tüm click eventlerini temizler
             });
         }
 
+        function updateClock() {
+            if (currentPlayer === 'white') {
+                whiteTime--;
+                whiteTimeDisplay.textContent = formatTime(whiteTime);
+                if (whiteTime <= 0) {
+                    clearInterval(gameInterval);
+                    gameStatus.innerText = "Black wins by timeout!";
+                    endGame();
+                }
+            } else {
+                blackTime--;
+                blackTimeDisplay.textContent = formatTime(blackTime);
+                if (blackTime <= 0) {
+                    clearInterval(gameInterval);
+                    gameStatus.innerText = "White wins by timeout!";
+                    endGame();
+                }
+            }
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            return `${minutes}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
         createBoard();
+        updateGameStatus();
     </script>
 </body>
 </html>
 
-        
+       
