@@ -1,4 +1,3 @@
-mkdir -p src/main/resources/static
 nano src/main/resources/static/index.html
 
 
@@ -26,6 +25,7 @@ nano src/main/resources/static/index.html
             grid-template-rows: repeat(8, 50px);
             width: 400px;
             margin: 20px auto;
+            border: 2px solid black;
         }
         .cell {
             width: 50px;
@@ -33,13 +33,22 @@ nano src/main/resources/static/index.html
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 36px;
         }
         .cell:nth-child(even) {
             background-color: #b58863;
         }
         .cell:nth-child(odd) {
             background-color: #f0d9b5;
+        }
+        .white-piece {
+            color: white;
+        }
+        .black-piece {
+            color: black;
+        }
+        .cell.draggable {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -49,27 +58,65 @@ nano src/main/resources/static/index.html
     <button onclick="startGame()">Start Game</button>
     <script>
         const chessboard = document.getElementById('chessboard');
+        const initialBoard = [
+            ["R", "N", "B", "Q", "K", "B", "N", "R"],
+            ["P", "P", "P", "P", "P", "P", "P", "P"],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["p", "p", "p", "p", "p", "p", "p", "p"],
+            ["r", "n", "b", "q", "k", "b", "n", "r"]
+        ];
 
         function startGame() {
-            fetch('/game/start')
-                .then(response => response.text())
-                .then(data => alert(data));
+            // Oyunu başlatır ve taşların hareket etmesine izin verir
+            makePiecesDraggable();
         }
 
         function createBoard() {
-            const cells = [];
-            for (let i = 0; i < 64; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                cells.push(cell);
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.setAttribute('data-row', row);
+                    cell.setAttribute('data-col', col);
+
+                    const piece = initialBoard[row][col];
+                    if (piece) {
+                        const pieceElement = document.createElement('span');
+                        pieceElement.textContent = piece;
+                        pieceElement.classList.add(piece === piece.toUpperCase() ? 'white-piece' : 'black-piece');
+                        cell.appendChild(pieceElement);
+                    }
+
+                    chessboard.appendChild(cell);
+                }
             }
-            cells.forEach(cell => chessboard.appendChild(cell));
+        }
+
+        function makePiecesDraggable() {
+            const cells = document.querySelectorAll('.cell');
+            let selectedPiece = null;
+
+            cells.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    if (selectedPiece) {
+                        // Hareket et
+                        cell.innerHTML = '';
+                        cell.appendChild(selectedPiece);
+                        selectedPiece = null;
+                    } else if (cell.firstChild) {
+                        // Taşı seç
+                        selectedPiece = cell.removeChild(cell.firstChild);
+                    }
+                });
+            });
         }
 
         createBoard();
     </script>
 </body>
 </html>
-
 
 
