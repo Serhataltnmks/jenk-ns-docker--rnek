@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONARQUBE_TOKEN = 'chess1'
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -10,6 +15,13 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'mvn clean package'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=chess-ai-game -Dsonar.login=$SONARQUBE_TOKEN'
+                }
             }
         }
         stage('Run') {
