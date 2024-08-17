@@ -32,22 +32,15 @@
             justify-content: center;
             width: 50px;
             height: 50px;
-            border: 1px solid #333;
         }
-        .cell:nth-child(odd) {
-            background-color: #f0d9b5;
+        /* Karelerin standart satranç tahtası gibi renklendirilmesi */
+        .cell[data-row-even="true"][data-col-even="false"],
+        .cell[data-row-even="false"][data-col-even="true"] {
+            background-color: #b58863; /* Koyu renk */
         }
-        .cell:nth-child(even) {
-            background-color: #b58863;
-        }
-        /* Satırların renklendirilmesi için düzenleme */
-        #chessboard > .cell:nth-child(odd):nth-child(8n+1),
-        #chessboard > .cell:nth-child(even):nth-child(8n) {
-            background-color: #f0d9b5;
-        }
-        #chessboard > .cell:nth-child(odd):nth-child(8n),
-        #chessboard > .cell:nth-child(even):nth-child(8n+1) {
-            background-color: #b58863;
+        .cell[data-row-even="true"][data-col-even="true"],
+        .cell[data-row-even="false"][data-col-even="false"] {
+            background-color: #f0d9b5; /* Açık renk */
         }
         .white-piece, .black-piece {
             width: 45px;
@@ -77,6 +70,11 @@
         .rank-label {
             left: -20px;
         }
+        #game-status {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -91,10 +89,12 @@
         </div>
     </div>
     <button onclick="startGame()">Start Game</button>
+    <div id="game-status"></div>
     <script>
         const chessboard = document.getElementById('chessboard');
         const whiteCaptured = document.getElementById('white-captured');
         const blackCaptured = document.getElementById('black-captured');
+        const gameStatus = document.getElementById('game-status');
 
         const initialBoard = [
             ["black-rook", "black-knight", "black-bishop", "black-queen", "black-king", "black-bishop", "black-knight", "black-rook"],
@@ -115,6 +115,7 @@
         let selectedCell = null;
 
         function startGame() {
+            gameStatus.innerText = "";
             makePiecesDraggable();
         }
 
@@ -127,6 +128,10 @@
                     cell.classList.add('cell');
                     cell.setAttribute('data-row', row);
                     cell.setAttribute('data-col', col);
+
+                    // Satır ve sütun paritesine göre renklendirme
+                    cell.setAttribute('data-row-even', row % 2 === 0);
+                    cell.setAttribute('data-col-even', col % 2 === 0);
 
                     const piece = initialBoard[row][col];
                     if (piece) {
@@ -176,6 +181,7 @@
 
                             cell.innerHTML = ''; // Hedef hücreyi temizle
                             cell.appendChild(selectedPiece);
+                            checkForWin();
                             switchPlayer();
                         } else {
                             selectedCell.appendChild(selectedPiece); // Geçersiz hamle, taşı geri koy
@@ -228,14 +234,13 @@
                     return false;
             }
         }
-
         function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
-            const direction = piece.includes('white') ? -1 : 1; // Beyaz yukarı (negatif), siyah aşağı (pozitif)
+            const direction = piece.includes('white') ? -1 : 1; // Beyaz yukarı (negatif), siyah aşağı (pozitif) ilerler
             const startRowForPawn = piece.includes('white') ? 6 : 1;
 
             // Düz hareket
             if (startCol === endCol) {
-                    if (startRow + direction === endRow && !targetPiece) return true;
+                if (startRow + direction === endRow && !targetPiece) return true;
                 if (startRow === startRowForPawn && startRow + 2 * direction === endRow && !targetPiece) return true;
             }
 
@@ -303,8 +308,29 @@
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
         }
 
+        function checkForWin() {
+            const whiteKing = document.querySelector('[data-piece="white-king"]');
+            const blackKing = document.querySelector('[data-piece="black-king"]');
+
+            if (!whiteKing) {
+                gameStatus.innerText = "Black wins!";
+                endGame();
+            } else if (!blackKing) {
+                gameStatus.innerText = "White wins!";
+                endGame();
+            }
+        }
+
+        function endGame() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.replaceWith(cell.cloneNode(true)); // Tüm click eventlerini temizler
+            });
+        }
+
         createBoard();
     </script>
 </body>
 </html>
 
+        
