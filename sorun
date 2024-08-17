@@ -151,7 +151,7 @@
         }
 
         function isValidPawnMove(startRow, startCol, endRow, endCol, piece, targetPiece) {
-            const direction = piece.includes('white') ? -1 : 1;
+            const direction = piece.includes('white') ? -1 : 1; // Beyaz yukarı (negatif), siyah aşağı (pozitif)
             const startRowForPawn = piece.includes('white') ? 6 : 1;
 
             // Düz hareket
@@ -169,7 +169,22 @@
         }
 
         function isValidRookMove(startRow, startCol, endRow, endCol) {
-            return startRow === endRow || startCol === endCol;
+            if (startRow !== endRow && startCol !== endCol) return false;
+
+            // Arada taş var mı kontrol et
+            if (startRow === endRow) {
+                const step = startCol < endCol ? 1 : -1;
+                for (let col = startCol + step; col !== endCol; col += step) {
+                    if (document.querySelector(`[data-row="${startRow}"][data-col="${col}"]`).innerHTML !== '') return false;
+                }
+            } else {
+                const step = startRow < endRow ? 1 : -1;
+                for (let row = startRow + step; row !== endRow; row += step) {
+                    if (document.querySelector(`[data-row="${row}"][data-col="${startCol}"]`).innerHTML !== '') return false;
+                }
+            }
+
+            return true;
         }
 
         function isValidKnightMove(startRow, startCol, endRow, endCol) {
@@ -179,16 +194,32 @@
         }
 
         function isValidBishopMove(startRow, startCol, endRow, endCol) {
-            return Math.abs(startRow - endRow) === Math.abs(startCol - endCol);
+            if (Math.abs(startRow - endRow) !== Math.abs(startCol - endCol)) return false;
+
+            const rowStep = startRow < endRow ? 1 : -1;
+            const colStep = startCol < endCol ? 1 : -1;
+            let row = startRow + rowStep;
+            let col = startCol + colStep;
+
+            while (row !== endRow && col !== endCol) {
+                if (document.querySelector(`[data-row="${row}"][data-col="${col}"]`).innerHTML !== '') return false;
+                row += rowStep;
+                col += colStep;
+            }
+
+            return true;
         }
 
         function isValidQueenMove(startRow, startCol, endRow, endCol) {
+            // Vezir, hem kale hem de fil gibi hareket edebilir
             return isValidRookMove(startRow, startCol, endRow, endCol) || isValidBishopMove(startRow, startCol, endRow, endCol);
         }
 
         function isValidKingMove(startRow, startCol, endRow, endCol) {
             const rowDiff = Math.abs(startRow - endRow);
             const colDiff = Math.abs(startCol - endCol);
+
+            // Şah, her yönde sadece bir kare hareket edebilir
             return rowDiff <= 1 && colDiff <= 1;
         }
 
